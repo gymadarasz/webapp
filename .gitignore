@@ -1,0 +1,5 @@
+logs/*.log
+mails/*.html
+vendor/
+.php_cs.cache
+composer.lock

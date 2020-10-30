@@ -1,0 +1,25 @@
+<?php
+
+$baseUrl = 'http://localhost/';
+$authSleep = 3;
+
+$mysqlHost = 'localhost';
+$mysqlUser = 'user';
+$mysqlPassword = 'password';
+$mysqlDatabase = 'links';
+
+$smtpHost = 'smtp.example.com';
+$smtpUser = 'user';
+$smtpSecret = 'secret';
+$smtpPort = 587;
+
+$mailerSystemEmail = 'system@example.com';
+$mailerSystemFrom = 'System Mailer';
+$mailerNoreplyEmail = 'no-reply@example.com';
+$mailerNoreplyName = 'Do Not Reply';
+
+$mailerSendMails = true;
+$mailerSaveMails = true;
+$mailerSaveMailsPath = __DIR__ . '/../../mails';
+    
+$logFile = __DIR__ . '/../../logs/app.log';

@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Madsoft\\App\\": "src/",
+            "Madsoft\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.1"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.2",
+        "phpstan/phpstan": "^0.12.52",
+        "friendsofphp/php-cs-fixer": "^2.16"
+    }
+}
