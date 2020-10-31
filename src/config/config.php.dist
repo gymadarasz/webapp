@@ -8,7 +8,7 @@ $templatesPath = __DIR__ . '/../templates';
 $mysqlHost = 'localhost';
 $mysqlUser = 'user';
 $mysqlPassword = 'password';
-$mysqlDatabase = 'links';
+$mysqlDatabase = 'webapp';
 
 $smtpHost = 'smtp.example.com';
 $smtpUser = 'user';
