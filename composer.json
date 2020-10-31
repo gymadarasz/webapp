@@ -1,4 +1,6 @@
 {
+    "name": "gymadarasz/webapp",
+    "type": "library",
     "autoload": {
         "psr-4": {
             "Madsoft\\App\\": "src/",
