@@ -3,9 +3,9 @@
 use GyMadarasz\WebApp\Service\Logger;
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Mysql;
-use Madsoft\Test\Test;
-use Madsoft\Test\Tester;
-use Madsoft\Test\AppTest;
+use GyMadarasz\Test\Test;
+use GyMadarasz\Test\Tester;
+use GyMadarasz\Test\AppTest;
 use GuzzleHttp\Client;
 
 // TODO: needs coverage info and more tests (cURL requests merged coverage!!)

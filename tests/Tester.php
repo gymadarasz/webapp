@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\Test;
+namespace GyMadarasz\Test;
 
 use function xdebug_start_code_coverage;
 use function strpos;

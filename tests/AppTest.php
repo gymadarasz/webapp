@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\Test;
+namespace GyMadarasz\Test;
 
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Logger;
 use GyMadarasz\WebApp\Service\Mysql;
-use Madsoft\Test\Test;
+use GyMadarasz\Test\Test;
 
 class AppTest implements Test
 {
