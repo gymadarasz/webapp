@@ -66,4 +66,12 @@ class Mysql
         }
         throw new RuntimeException("MySQL query error:\n$query\nMessage: {$this->mysqli->error}");
     }
+
+    public function update(string $query): int
+    {
+        if (!$this->query($query)) {
+            return 0;
+        }
+        return $this->mysqli->affected_rows;
+    }
 }

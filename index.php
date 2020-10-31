@@ -27,7 +27,7 @@ set_error_handler(
     }
 );
 
-new Router($routes = [
+new Router([
     'public' => [
         'GET' => [
             '' => [LoginPage::class, 'run'],

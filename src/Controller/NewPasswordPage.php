@@ -31,7 +31,9 @@ class NewPasswordPage
         $token = $this->globals->getGet('token');
         $this->mysql->connect();
         if (!$this->user->doAuthByToken($token)) {
-            throw new UserErrorException('Invalid token');
+            $output = $this->template->create('pwdchange.html.php');
+            $output->set('error', 'Invalid token');
+            return $output;
         }
         return $this->template->create('pwdchange.html.php');
     }

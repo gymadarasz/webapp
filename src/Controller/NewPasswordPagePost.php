@@ -34,7 +34,7 @@ class NewPasswordPagePost
     /**
      * @return mixed
      */
-    public function run()
+    public function run() // TODO needs more negative tests for new password posting
     {
         $token = $this->globals->getGet('token');
         $this->mysql->connect();

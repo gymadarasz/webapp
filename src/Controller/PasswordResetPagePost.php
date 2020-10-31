@@ -57,7 +57,7 @@ class PasswordResetPagePost
     private function doPasswordReset(string $email): bool
     {
         if (!$this->emailValidator->isValidEmail($email)) {
-            throw new UserErrorException('Email is not valid (' . $email . ')!');
+            return false;
         }
         $this->mysql->connect();
         $token = $this->user->createToken($email);

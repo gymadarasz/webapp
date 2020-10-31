@@ -60,10 +60,10 @@ final class User
         return true;
     }
 
-    public function doActivate(string $token): bool
+    public function doActivate(string $token): int
     {
         $_token = $this->mysql->escape($token);
-        return $this->mysql->query("UPDATE user SET active = 1, token = '' WHERE token = '$_token' LIMIT 1;");
+        return $this->mysql->update("UPDATE user SET active = 1, token = '' WHERE token = '$_token' LIMIT 1;");
     }
 
     public function createUser(string $email, string $password): ?string

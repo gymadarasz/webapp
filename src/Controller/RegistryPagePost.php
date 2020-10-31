@@ -77,11 +77,14 @@ class RegistryPagePost
 
     private function doRegister(string $email, string $emailRetype, string $password): void
     {
+        if (!$email) {
+            throw new UserErrorException('Email can not be empty');
+        }
         if ($email !== $emailRetype) {
-            throw new UserErrorException('Email fields are not the same!');
+            throw new UserErrorException('Email fields are not the same');
         }
         if (!$this->emailValidator->isValidEmail($email)) {
-            throw new UserErrorException('Email is not valid (' . $email . ')!');
+            throw new UserErrorException('Email address is invalid');
         }
         if ($passwordError = $this->passwordValidator->getPasswordError($password)) {
             throw new UserErrorException($passwordError);
