@@ -9,18 +9,23 @@ cp src/config/config.php.dist src/config/config.dev.php
 cp src/config/config.php.dist src/config/config.test.php
 cp src/config/config.php.dist src/config/config.live.php
 ```
-Set enviroment in `src/Config.php` to one of the following: `dev`, `test`, `live`
+Set enviroment in `src/config/env.php` to one of the following: `dev`, `test`, `live`
+
 Set the proper values in files: 
+
     `src/config/config.dev.php` <- for local developement
+    
     `src/config/config.test.php` <- for testing
+    
     `src/config/config.live.php` <- for live
+    
 
 DB:
-see in `links.sql`
+see in `webapp.sql`
 
-tail monitoring:
+tail monitoring: (path maybe different on your local environment)
 ```
-tail -f /var/log/apache2/error.log -f /var/www/links/logs/*.log -f /var/log/apache2/access.log
+tail -f /var/log/apache2/error.log -f /var/www/webapp/logs/*.log -f /var/log/apache2/access.log
 ```
 
 tests:
