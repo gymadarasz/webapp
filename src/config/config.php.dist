@@ -1,9 +1,10 @@
 <?php
 
-$baseUrl = 'http://localhost/';
+$baseUrl = 'http://localhost/webapp/';
 $authSleep = 3;
 
 $templatesPath = __DIR__ . '/../templates';
+$templatesPathExt = __DIR__ . '/../../../webapp/src/templates';
 
 $mysqlHost = 'localhost';
 $mysqlUser = 'user';

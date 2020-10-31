@@ -1,3 +1,3 @@
 <h1>Error</h1>
-<?php include 'messages.html.php'; ?>
+<?php echo isset($this) ? $this->create('messages.html.php', $this->data) : ''; ?>
 <a href="<?php echo $base ?? ''; ?>">Back</a>

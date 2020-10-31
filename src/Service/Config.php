@@ -15,6 +15,13 @@ class Config
     /** @var ?array<mixed> */
     private static ?array $data = null;
 
+    private static string $extPath = Config::CONFIG_PATH;
+
+    public function setExtPath(string $extPath): void
+    {
+        Config::$extPath = $extPath;
+    }
+
     /**
      * @return mixed
      */
@@ -22,6 +29,7 @@ class Config
     {
         if (null === Config::$data) {
             include $this->getConfigFile();
+            include $this->getConfigExtFile();
             Config::$data = get_defined_vars();
         }
         return Config::$data[$name];
@@ -30,6 +38,11 @@ class Config
     private function getConfigFile(): string
     {
         return Config::CONFIG_PATH . '/config.' . $this->getEnv() . '.php';
+    }
+
+    private function getConfigExtFile(): string
+    {
+        return Config::$extPath . '/config.' . $this->getEnv() . '.php';
     }
 
     public function getEnv(): string

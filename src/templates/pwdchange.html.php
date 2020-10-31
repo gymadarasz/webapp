@@ -1,5 +1,5 @@
 <h1>Change password</h1>
-<?php include 'messages.html.php'; ?>
+<?php echo isset($this) ? $this->create('messages.html.php', $this->data) : ''; ?>
 <form method="POST">
     <input type="password" name="password" placeholder="Password">
     <input type="password" name="password_retype" placeholder="Retype password">

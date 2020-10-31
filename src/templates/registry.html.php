@@ -1,5 +1,5 @@
 <h1>Registry</h1>
-<?php include 'messages.html.php'; ?>
+<?php echo isset($this) ? $this->create('messages.html.php', $this->data) : ''; ?>
 <form method="POST">
     <input type="email" name="email" placeholder="Email" value="<?php echo $email ?? ''; ?>">
     <input type="email" name="email_retype" placeholder="Retype email" value="<?php echo $emailRetype ?? ''; ?>">

@@ -9,6 +9,7 @@ use function is_array;
 use function is_object;
 use function htmlentities;
 use stdClass;
+use RuntimeException;
 use GyMadarasz\WebApp\Service\Config;
 
 class Template
@@ -27,10 +28,20 @@ class Template
         $this->config = $config;
     }
 
-    public function create(string $filename): Template
+    /**
+     * @param array<mixed> $data
+     */
+    public function create(string $filename, array $data = []): Template
     {
         $template = new Template($this->config);
-        $template->filename = $filename;
+        $template->filename = $this->config->get('templatesPathExt') . '/' . $filename;
+        if (!file_exists($template->filename)) {
+            $template->filename = $this->config->get('templatesPath') . '/' . $filename;
+        }
+        if (!file_exists($template->filename)) {
+            throw new RuntimeException('Template file "' . $this->config->get('templatesPathExt') . '/' . $filename . '" not found nor "' . $template->filename . '".');
+        }
+        $template->data = $data;
         return $template;
     }
 
@@ -48,7 +59,7 @@ class Template
         foreach ($this->data as $_key => $_value) {
             $$_key = $_value;
         }
-        include $this->config->get('templatesPath') . '/' . $this->filename;
+        include $this->filename;
         $contents = (string)ob_get_contents();
         ob_end_clean();
         return $contents;

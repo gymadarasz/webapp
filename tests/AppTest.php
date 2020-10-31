@@ -13,9 +13,9 @@ class AppTest implements Test
     const USER_PASSWORD_OLD = 'OldPassword123!';
     const USER_PASSWORD = 'Pass1234';
 
-    private Config $config;
-    private Logger $logger;
-    private Mysql $mysql;
+    protected Config $config;
+    protected Logger $logger;
+    protected Mysql $mysql;
 
     public function __construct(Config $config, Logger $logger, Mysql $mysql)
     {
@@ -24,15 +24,15 @@ class AppTest implements Test
         $this->mysql = $mysql;
     }
 
-    private function cleanupUsers(): void
+    protected function cleanupUsers(): void
     {
         $this->logger->debug('I am going to delete all users from database.');
 
         $this->mysql->connect();
-        $this->mysql->query("TRUNCATE user");
+        $this->mysql->query("DELETE FROM user WHERE email = '" . AppTest::USER_EMAIL . "';");
     }
 
-    private function cleanupMails(): void
+    protected function cleanupMails(): void
     {
         $this->logger->debug('I am going to delete all saved emails.');
 
@@ -42,7 +42,7 @@ class AppTest implements Test
         }
     }
 
-    private function cleanup(): void
+    protected function cleanup(): void
     {
         $this->cleanupUsers();
         $this->cleanupMails();
@@ -63,7 +63,7 @@ class AppTest implements Test
         //$this->cleanup();
     }
 
-    private function checkRegistryLoginAndPasswordResetProcess(Tester $tester): void
+    protected function checkRegistryLoginAndPasswordResetProcess(Tester $tester): void
     {
         $this->logger->debug('I am going to the Login page.');
 
@@ -154,13 +154,8 @@ class AppTest implements Test
 
 
         $this->logger->debug('I am going to post my newly registered account details.');
-
-        $contents = $tester->post('', [
-            'email' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD_OLD,
-        ]);
+        $contents = $this->checkIfICanLogin($tester, AppTest::USER_EMAIL, AppTest::USER_PASSWORD_OLD);
         $this->checkIndexPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Login success');
         
 
         $this->logger->debug('I am going to the restricted Index page.');
@@ -222,14 +217,8 @@ class AppTest implements Test
 
 
         $this->logger->debug('I am going to login with my new password');
-
-        $contents = $tester->post('', [
-            'email' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD,
-        ]);
+        $contents = $this->checkIfICanLogin($tester);
         $this->checkIndexPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Login success');
-
 
         $this->logger->debug('I am going to the restricted Index page.');
 
@@ -258,17 +247,23 @@ class AppTest implements Test
         $this->checkPageContainsError($tester, $contents, 'Request is not supported.');
     }
 
-    private function checkLoginAfterLoginShouldFails(Tester $tester): void
+    protected function checkIfICanLogin(Tester $tester, string $user = AppTest::USER_EMAIL, string $password = AppTest::USER_PASSWORD): string
     {
+        $this->logger->debug("I am going to post these login credentials: user: '$user' / password: '$password'");
 
-        $this->logger->debug('I am going to login');
-
-        $contents = $tester->post('', [
-            'email' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD,
+        $contents = $tester->post('?q=', [
+            'email' => $user,
+            'password' => $password,
         ]);
-        $this->checkIndexPage($tester, $contents);
         $this->checkPageContainsMessage($tester, $contents, 'Login success');
+        return $contents;
+    }
+
+    protected function checkLoginAfterLoginShouldFails(Tester $tester): void
+    {
+        $this->logger->debug('I am going to login');
+        $contents = $this->checkIfICanLogin($tester);
+        $this->checkIndexPage($tester, $contents);
 
 
         $this->logger->debug('I am going to try login again when I am logged in so that I get an error page.');
@@ -288,8 +283,8 @@ class AppTest implements Test
         $this->checkPageContainsMessage($tester, $contents, 'Logout success');
     }
 
-    private function checkInvalidRegistryShouldFails(Tester $tester): void {
-
+    protected function checkInvalidRegistryShouldFails(Tester $tester): void
+    {
         $this->logger->debug('I am going to send an empty registration');
 
         $contents = $tester->post('?q=registry', [
@@ -375,19 +370,18 @@ class AppTest implements Test
             'password' => 'ValidPassword123!',
         ]);
         $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Registration failed');        
+        $this->checkPageContainsError($tester, $contents, 'Registration failed');
     }
 
-    private function checkInvalidPasswordResetShouldFails(Tester $tester): void
+    protected function checkInvalidPasswordResetShouldFails(Tester $tester): void
     {
-
         $this->logger->debug('I am going to try to send an empty email to password reset.');
 
         $contents = $tester->post('?q=pwdreset', [
             'email' => '',
         ]);
         $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed'); 
+        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed');
 
 
         $this->logger->debug('I am going to try to send an invalid email to password reset.');
@@ -396,10 +390,10 @@ class AppTest implements Test
             'email' => 'invalid-email-address',
         ]);
         $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed'); 
+        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed');
     }
 
-    private function checkErrorPage(Tester $tester, string $contents): void
+    protected function checkErrorPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Error page properly.');
 
@@ -407,7 +401,7 @@ class AppTest implements Test
         $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '">Back</a>', $contents);
     }
 
-    private function checkLoginPage(Tester $tester, string $contents): void
+    protected function checkLoginPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Login page properly.');
 
@@ -420,7 +414,7 @@ class AppTest implements Test
         $tester->assertContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
     }
 
-    private function checkRegistryPage(Tester $tester, string $contents): void
+    protected function checkRegistryPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Registry page properly.');
 
@@ -434,7 +428,7 @@ class AppTest implements Test
         $tester->assertNotContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
     }
 
-    private function checkPasswordResetPage(Tester $tester, string $contents): void
+    protected function checkPasswordResetPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Password Reset page properly.');
 
@@ -443,7 +437,7 @@ class AppTest implements Test
         $tester->assertContains('<input type="submit" value="Reset password"', $contents);
     }
 
-    private function checkIndexPage(Tester $tester, string $contents): void
+    protected function checkIndexPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Index page properly.');
 
@@ -451,7 +445,7 @@ class AppTest implements Test
         $tester->assertContains('<a href="?q=logout">Logout</a>', $contents);
     }
 
-    private function checkChangePasswordPage(Tester $tester, string $contents): void
+    protected function checkChangePasswordPage(Tester $tester, string $contents): void
     {
         $this->logger->debug('I am check that I can see the Change Password page properly.');
 
@@ -461,21 +455,21 @@ class AppTest implements Test
         $tester->assertContains('<input type="submit" value="Change password"', $contents);
     }
     
-    private function checkPageContainsMessage(Tester $tester, string $contents, string $message): void
+    protected function checkPageContainsMessage(Tester $tester, string $contents, string $message): void
     {
         $this->logger->debug('I am check that I can see the message "' . $message . '" on the page.');
 
         $tester->assertContains('<div class="message">' . $message . '</div>', $contents);
     }
 
-    private function checkPageContainsError(Tester $tester, string $contents, string $error): void
+    protected function checkPageContainsError(Tester $tester, string $contents, string $error): void
     {
         $this->logger->debug('I am check that I can see the error "' . $error . '" on the page.');
 
         $tester->assertContains('<div class="message red">' . $error . '</div>', $contents);
     }
 
-    private function checkMail(Tester $tester, string $subject): string
+    protected function checkMail(Tester $tester, string $subject): string
     {
         $this->logger->debug('I am check that I have got an email with subject "' . $subject . '".');
 
@@ -486,7 +480,7 @@ class AppTest implements Test
         return (string)file_get_contents((string)$files[0]);
     }
 
-    private function checkRegistrationEmail(Tester $tester, string $email): string
+    protected function checkRegistrationEmail(Tester $tester, string $email): string
     {
         $this->logger->debug('I am going to check that the Registration email is correct.');
 
@@ -499,7 +493,7 @@ class AppTest implements Test
         return $token;
     }
 
-    private function checkPasswordResetEmail(Tester $tester, string $email): string
+    protected function checkPasswordResetEmail(Tester $tester, string $email): string
     {
         $this->logger->debug('I am going to check that the Password Reset email is correct.');
 

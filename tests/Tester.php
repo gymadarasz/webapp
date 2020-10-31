@@ -136,6 +136,30 @@ class Tester
         }
     }
 
+    /**
+     * @param mixed $expected
+     * @param mixed $results
+     */
+    public function assertNotEquals($expected, $results, string $message = 'Results should equals to expected (type strict).'): void
+    {
+        $ok = $results !== $expected;
+        if (!$ok) {
+            $this->fail($message);
+        } else {
+            $this->ok();
+        }
+    }
+
+    public function assertTrue(bool $results, string $message = 'Results should be true.'): void
+    {
+        $ok = $results === true;
+        if (!$ok) {
+            $this->fail($message);
+        } else {
+            $this->ok();
+        }
+    }
+
     public function stat(): int
     {
         echo "\nSuccess: " . $this->passes;
