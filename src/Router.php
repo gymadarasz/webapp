@@ -26,12 +26,12 @@ class Router
         }
         $globals->sessionStart();
         if ($globals->getSession('user', false)) {
-            $routes = $routes['protected'] ?? [];
+            $routes = $routes['protected'] ?? $routes['*'];
         } else {
-            $routes = $routes['public'] ?? [];
+            $routes = $routes['public'] ?? $routes['*'];
         }
         $routes = $routes[$globals->getMethod()] ?? $routes['*'];
-        $routes = $routes[$globals->getGet('q', '')] ?? '*';
+        $routes = $routes[$globals->getGet('q', '')] ?? $routes['*'];
         
         $ctrlr = $this->getInstance($routes[0]);
         $results = $ctrlr->{$routes[1]}();

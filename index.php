@@ -64,5 +64,10 @@ new Router($routes = [
             '*' => [ErrorPage::class, 'run'],
         ]
     ],
+    '*' => [
+        '*' => [
+            '*' => [ErrorPage::class, 'run'],
+        ]
+    ]
 ]);
 
