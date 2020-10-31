@@ -1,18 +1,26 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 use RuntimeException;
 use mysqli;
 use mysqli_result;
+use Madsoft\App\Service\Config;
 
 class Mysql
 {
     private mysqli $mysqli;
 
+    private Config $config;
+
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
     public function connect(): void
     {
-        $this->mysqli = new mysqli(Config::get('mysqlHost'), Config::get('mysqlUser'), Config::get('mysqlPassword'), Config::get('mysqlDatabase'));
+        $this->mysqli = new mysqli($this->config->get('mysqlHost'), $this->config->get('mysqlUser'), $this->config->get('mysqlPassword'), $this->config->get('mysqlDatabase'));
         if ($this->mysqli->connect_error) {
             throw new RuntimeException('MySQL connection error: (' . $this->mysqli->connect_errno . ')' . $this->mysqli->connect_error);
         }

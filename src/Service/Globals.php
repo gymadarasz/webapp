@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 class Globals
 {
@@ -29,7 +29,9 @@ class Globals
 
     public function sessionStart(): void
     {
-        session_start();
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     public function sessionDestroy(): void

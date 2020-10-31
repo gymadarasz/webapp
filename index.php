@@ -1,13 +1,19 @@
-<?php
+<?php declare(strict_types = 1);
 
-use Madsoft\App\Mailer;
-use Madsoft\App\Logger;
-use Madsoft\App\Globals;
-use Madsoft\App\Mysql;
-use Madsoft\App\User;
-use Madsoft\App\Template;
-use Madsoft\App\Config;
-use Madsoft\App\App;
+use Madsoft\App\Router;
+use Madsoft\App\Controller\LoginPage;
+use Madsoft\App\Controller\RegistryPage;
+use Madsoft\App\Controller\ActivatePage;
+use Madsoft\App\Controller\PasswordResetPage;
+use Madsoft\App\Controller\NewPasswordPage;
+use Madsoft\App\Controller\ResendPage;
+use Madsoft\App\Controller\ErrorPage;
+use Madsoft\App\Controller\LoginPagePost;
+use Madsoft\App\Controller\RegistryPagePost;
+use Madsoft\App\Controller\PasswordResetPagePost;
+use Madsoft\App\Controller\NewPasswordPagePost;
+use Madsoft\App\Controller\IndexPage;
+use Madsoft\App\Controller\LogoutPage;
 
 include __DIR__ . '/vendor/autoload.php';
 
@@ -21,11 +27,42 @@ set_error_handler(
     }
 );
 
-    
-echo new App(
-    $logger = new Logger(),
-    $globals = new Globals(),
-    $mysql = new Mysql(),
-    new User($globals, $mysql),
-    new Mailer($logger)
-);
+new Router($routes = [
+    'public' => [
+        'GET' => [
+            '' => [LoginPage::class, 'run'],
+            'login' => [LoginPage::class, 'run'],
+            'registry' => [RegistryPage::class, 'run'],
+            'activate' => [ActivatePage::class, 'run'],
+            'pwdreset' => [PasswordResetPage::class, 'run'],
+            'newpassword' => [NewPasswordPage::class, 'run'],
+            'resend' => [ResendPage::class, 'run'],
+            '*' => [ErrorPage::class, 'run'],
+        ],
+        'POST' => [
+            '' => [LoginPagePost::class, 'run'],
+            'login' => [LoginPagePost::class, 'run'],
+            'registry' => [RegistryPagePost::class, 'run'],
+            'pwdreset' => [PasswordResetPagePost::class, 'run'],
+            'newpassword' => [NewPasswordPagePost::class, 'run'],
+            '*' => [ErrorPage::class, 'run'],
+        ],
+        '*' => [
+            '*' => [ErrorPage::class, 'run'],
+        ]
+    ],
+    'protected' => [
+        'GET' => [
+            '' => [IndexPage::class, 'run'],
+            'logout' => [LogoutPage::class, 'run'],
+            '*' => [ErrorPage::class, 'run'],
+        ],
+        'POST' => [
+            '*' => [ErrorPage::class, 'run'],
+        ],
+        '*' => [
+            '*' => [ErrorPage::class, 'run'],
+        ]
+    ],
+]);
+

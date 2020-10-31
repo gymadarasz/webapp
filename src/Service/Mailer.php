@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 use function strip_tags;
 use function file_exists;
@@ -10,17 +10,19 @@ use function is_dir;
 use function date;
 use Exception;
 use RuntimeException;
-use Madsoft\App\Config;
-use Madsoft\App\Logger;
+use Madsoft\App\Service\Config;
+use Madsoft\App\Service\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
 final class Mailer
 {
+    private Config $config;
     private Logger $logger;
 
-    public function __construct(Logger $logger)
+    public function __construct(Config $config, Logger $logger)
     {
+        $this->config = $config;
         $this->logger = $logger;
     }
     
@@ -36,17 +38,17 @@ final class Mailer
             //Server settings
             //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
             $mail->isSMTP();                                              // Send using SMTP
-            $mail->Host       = Config::get('smtpHost');                    // Set the SMTP server to send through
+            $mail->Host       = $this->config->get('smtpHost');                    // Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-            $mail->Username   = Config::get('smtpUser');                     // SMTP username
-            $mail->Password   = Config::get('smtpSecret');                               // SMTP password
+            $mail->Username   = $this->config->get('smtpUser');                     // SMTP username
+            $mail->Password   = $this->config->get('smtpSecret');                               // SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-            $mail->Port       = Config::get('smtpPort');                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+            $mail->Port       = $this->config->get('smtpPort');                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
             //Recipients
-            $mail->setFrom(Config::get('mailerSystemEmail'), Config::get('mailerSystemFrom'));
+            $mail->setFrom($this->config->get('mailerSystemEmail'), $this->config->get('mailerSystemFrom'));
             $mail->addAddress($to);     // Add a recipient
-            $mail->addReplyTo(Config::get('mailerNoreplyEmail'), Config::get('mailerNoreplyName'));
+            $mail->addReplyTo($this->config->get('mailerNoreplyEmail'), $this->config->get('mailerNoreplyName'));
             // $mail->addCC('cc@example.com');
             // $mail->addBCC('bcc@example.com');
 
@@ -59,17 +61,17 @@ final class Mailer
             $mail->Subject = $subject;
             $mail->Body    = $body;
             $mail->AltBody = strip_tags($body);
-            if (Config::get('mailerSendMails')) {
+            if ($this->config->get('mailerSendMails')) {
                 $mail->send();
                 $this->logger->info("Email sent to: $to\nSubject: $subject\nBody:\n$body\n\n");
             }
-            if (Config::get('mailerSaveMails')) {
-                if (!file_exists(Config::get('mailerSaveMailsPath')) || !is_dir(Config::get('mailerSaveMailsPath'))) {
-                    if (!mkdir(Config::get('mailerSaveMailsPath'), 777)) {
-                        throw new RuntimeException("Folder creation error: " . Config::get('mailerSaveMailsPath'));
+            if ($this->config->get('mailerSaveMails')) {
+                if (!file_exists($this->config->get('mailerSaveMailsPath')) || !is_dir($this->config->get('mailerSaveMailsPath'))) {
+                    if (!mkdir($this->config->get('mailerSaveMailsPath'), 777)) {
+                        throw new RuntimeException("Folder creation error: " . $this->config->get('mailerSaveMailsPath'));
                     }
                 }
-                $fname = Config::get('mailerSaveMailsPath') . '/' . date("Y-m-s H-i-s") . " to $to ($subject).html";
+                $fname = $this->config->get('mailerSaveMailsPath') . '/' . date("Y-m-s H-i-s") . " to $to ($subject).html";
                 if (
                     file_put_contents(
                         $fname,

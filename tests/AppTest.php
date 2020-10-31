@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Madsoft\Test;
 
-use Madsoft\App\Config;
-use Madsoft\App\Logger;
-use Madsoft\App\Mysql;
+use Madsoft\App\Service\Config;
+use Madsoft\App\Service\Logger;
+use Madsoft\App\Service\Mysql;
 use Madsoft\Test\Test;
 
 class AppTest implements Test
@@ -13,13 +13,15 @@ class AppTest implements Test
     const USER_OLD_PASSWORD = 'OldPassword123!';
     const USER_NEW_PASSWORD = 'Pass1234';
 
+    private Config $config;
     private Logger $logger;
     private Mysql $mysql;
 
-    public function __construct(Logger $logger = null, Mysql $mysql = null)
+    public function __construct(Config $config, Logger $logger, Mysql $mysql)
     {
-        $this->logger = $logger ?? new Logger();
-        $this->mysql = $mysql ?? new Mysql();
+        $this->config = $config;
+        $this->logger = $logger;
+        $this->mysql = $mysql;
     }
 
     private function cleanupUsers(): void
@@ -34,7 +36,7 @@ class AppTest implements Test
     {
         $this->logger->debug('I am going to delete all saved emails.');
 
-        $files = (array)glob(Config::get('mailerSaveMailsPath') . '/*.*');
+        $files = (array)glob($this->config->get('mailerSaveMailsPath') . '/*.*');
         foreach ($files as $file) {
             unlink((string)$file);
         }
@@ -112,7 +114,7 @@ class AppTest implements Test
 
         $this->logger->debug('I am going to activate my account via activation token.');
 
-        $contents = $tester->get(Config::get('baseUrl') . '?q=activate&token=' . $token);
+        $contents = $tester->get($this->config->get('baseUrl') . '?q=activate&token=' . $token);
         $this->checkLoginPage($tester, $contents);
         $this->checkPageContainsMessage($tester, $contents, 'Your account is now activated.');
 
@@ -174,13 +176,13 @@ class AppTest implements Test
 
         $this->logger->debug('I am going to follow the Password Reset link to the Password Reset page.');
 
-        $contents = $tester->get(Config::get('baseUrl') . '?q=newpassword&token=' . $token);
+        $contents = $tester->get($this->config->get('baseUrl') . '?q=newpassword&token=' . $token);
         $this->checkChangePasswordPage($tester, $contents);
 
 
         $this->logger->debug('I am going to post my new password to reset my password.');
 
-        $contents = $tester->post(Config::get('baseUrl') . '?q=newpassword&token=' . $token, [
+        $contents = $tester->post($this->config->get('baseUrl') . '?q=newpassword&token=' . $token, [
             'password' => AppTest::USER_NEW_PASSWORD,
             'password_retype' => AppTest::USER_NEW_PASSWORD,
         ]);
@@ -283,7 +285,7 @@ class AppTest implements Test
     {
         $this->logger->debug('I am check that I have got an email with subject "' . $subject . '".');
 
-        $files = (array)glob(Config::get('mailerSaveMailsPath') . '/*.*');
+        $files = (array)glob($this->config->get('mailerSaveMailsPath') . '/*.*');
         $tester->assertCount(1, $files);
         $tester->assertContains(AppTest::USER_EMAIL, (string)$files[0]);
         $tester->assertContains($subject, (string)$files[0]);
@@ -296,8 +298,8 @@ class AppTest implements Test
 
         $tester->assertContains('Thank you for your registration,<br>', $email);
         $tester->assertContains('please activate your account by click on the following link or copy to your browser address line:<br>', $email);
-        $tester->assertContains('<a href="' . Config::get('baseUrl') . '?q=activate&token=', $email);
-        $tester->assertContains('">' . Config::get('baseUrl') . '?q=activate&token=', $email);
+        $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
+        $tester->assertContains('">' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
         $token = explode('">', explode('&token=', $email)[1])[0];
         $tester->assertLongerThan(40, $token);
         return $token;
@@ -309,8 +311,8 @@ class AppTest implements Test
 
         $tester->assertContains('You asked to reset your password,<br>', $email);
         $tester->assertContains('you can reset your password by click on the following link or copy to your browser address line:<br>', $email);
-        $tester->assertContains('<a href="' . Config::get('baseUrl') . '?q=newpassword&token=', $email);
-        $tester->assertContains('">' . Config::get('baseUrl') . '?q=newpassword&token=', $email);
+        $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
+        $tester->assertContains('">' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
         $tester->assertContains('If you did not asked to reset password please ignore this message.<br>', $email);
 
         $token = explode('">', explode('&token=', $email)[1])[0];

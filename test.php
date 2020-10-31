@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types = 1);
 
-use Madsoft\App\Logger;
-use Madsoft\App\Config;
+use Madsoft\App\Service\Logger;
+use Madsoft\App\Service\Config;
+use Madsoft\App\Service\Mysql;
 use Madsoft\Test\Test;
 use Madsoft\Test\Tester;
 use Madsoft\Test\AppTest;
@@ -22,11 +23,12 @@ error_reporting(E_ALL);
 include __DIR__ . '/vendor/autoload.php';
 
 return (new Tester(
-    new Logger(),
+    $config = new Config(),
+    $logger = new Logger($config),
     new Client([
-        'base_uri' => Config::get('baseUrl'), 
+        'base_uri' => $config->get('baseUrl'), 
         'cookies' => true,
     ]), [
-        new AppTest(),
-    ], true
+        new AppTest($config, $logger, new Mysql($config)),
+    ]
 ))->stat();

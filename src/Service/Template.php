@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 use function ob_start;
 use function ob_get_contents;
@@ -9,11 +9,10 @@ use function is_array;
 use function is_object;
 use function htmlentities;
 use stdClass;
+use Madsoft\App\Service\Config;
 
 class Template
 {
-    private string $basepath = __DIR__ . '/templates/';
-
     private string $filename;
 
     private bool $setAsItIs = false;
@@ -21,9 +20,18 @@ class Template
     /** @var array<mixed> $data */
     private array $data = [];
 
-    public function __construct(string $filename)
+    private Config $config;
+
+    public function __construct(Config $config)
     {
-        $this->filename = $filename;
+        $this->config = $config;
+    }
+
+    public function create(string $filename): Template
+    {
+        $template = new Template($this->config);
+        $template->filename = $filename;
+        return $template;
     }
 
     /**
@@ -40,7 +48,7 @@ class Template
         foreach ($this->data as $_key => $_value) {
             $$_key = $_value;
         }
-        include $this->basepath . $this->filename;
+        include $this->config->get('templatesPath') . '/' . $this->filename;
         $contents = (string)ob_get_contents();
         ob_end_clean();
         return $contents;

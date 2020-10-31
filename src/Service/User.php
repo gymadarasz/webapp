@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 use function sleep;
 use function password_verify;
@@ -10,8 +10,9 @@ use function base64_encode;
 use function md5;
 use function rand;
 use RuntimeException;
-use Madsoft\App\Globals;
-use Madsoft\App\Mysql;
+use Madsoft\App\Service\Config;
+use Madsoft\App\Service\Globals;
+use Madsoft\App\Service\Mysql;
 
 final class User
 {
@@ -19,25 +20,27 @@ final class User
 
     private string $email;
 
+    private Config $config;
     private Globals $globals;
     private Mysql $mysql;
 
-    public function __construct(Globals $globals, Mysql $mysql)
+    public function __construct(Config $config, Globals $globals, Mysql $mysql)
     {
+        $this->config = $config;
         $this->globals = $globals;
         $this->mysql = $mysql;
     }
 
     public function doAuth(string $email, string $password): bool
     {
-        sleep(Config::get('authSleep'));
+        sleep($this->config->get('authSleep'));
         $_email = $this->mysql->escape($email);
         $query = "SELECT id, email, password FROM user WHERE email = '$_email' AND active = 1 LIMIT 1;";
         $user = $this->mysql->selectOne($query);
         if (!$user || !password_verify($password, $user['password'])) {
             return false;
         }
-        $this->id = $user['id'];
+        $this->id = (int)$user['id'];
         $this->email = $user['email'];
         $this->globals->setSession('user', $this);
         return true;
@@ -45,14 +48,14 @@ final class User
 
     public function doAuthByToken(string $token): bool
     {
-        sleep(Config::get('authSleep'));
+        sleep($this->config->get('authSleep'));
         $_token = $this->mysql->escape($token);
         $query = "SELECT id, email, password FROM user WHERE token = '$_token' AND active = 1 LIMIT 1;";
         $user = $this->mysql->selectOne($query);
         if (!$user) {
             return false;
         }
-        $this->id = $user['id'];
+        $this->id = (int)$user['id'];
         $this->email = $user['email'];
         return true;
     }

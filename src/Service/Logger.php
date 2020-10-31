@@ -1,12 +1,13 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace Madsoft\App\Service;
 
 use function file_put_contents;
 use function date;
 use function get_class;
 use Exception;
 use RuntimeException;
+use Madsoft\App\Service\Config;
 
 class Logger
 {
@@ -14,6 +15,13 @@ class Logger
     const LVL_WARNING = 'warning';
     const LVL_INFO = 'info';
     const LVL_DEBUG = 'debug';
+
+    private Config $config;
+
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
 
     public function doLogException(Exception $e): void
     {
@@ -43,8 +51,8 @@ class Logger
     protected function doLog(string $level, string $msg): void
     {
         $fullmsg = "[" . date("Y-m-d H:i:s") . "] [$level] $msg";
-        if (!file_put_contents(Config::get('logFile'), "$fullmsg\n", FILE_APPEND)) {
-            throw new RuntimeException("Log file error, (" . Config::get('logFile') . ") message is not logged: $fullmsg");
+        if (!file_put_contents($this->config->get('logFile'), "$fullmsg\n", FILE_APPEND)) {
+            throw new RuntimeException("Log file error, (" . $this->config->get('logFile') . ") message is not logged: $fullmsg");
         }
     }
 }

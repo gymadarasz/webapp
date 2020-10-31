@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Madsoft\Test;
 
@@ -9,14 +9,15 @@ use function implode;
 use function count;
 use Exception;
 use RuntimeException;
-use Madsoft\App\Config;
-use Madsoft\App\Logger;
+use Madsoft\App\Service\Config;
+use Madsoft\App\Service\Logger;
 use GuzzleHttp\Client;
 
 // TODO add coverage stat
 
 class Tester
 {
+    private Config $config;
     private Logger $logger;
     private Client $client;
 
@@ -25,24 +26,22 @@ class Tester
 
     private int $passes;
 
-    private bool $dieFast;
-
     /**
      * @param array<Test> $tests
      */
-    public function __construct(Logger $logger, Client $client, array $tests, bool $dieFast = false)
+    public function __construct(Config $config, Logger $logger, Client $client, array $tests)
     {
         if (php_sapi_name() !== 'cli') {
             throw new RuntimeException('Test can run only from command line.');
         }
 
+        $this->config = $config;
         $this->logger = $logger;
-        $this->dieFast = $dieFast;
 
-        $env = Config::getEnv();
+        $env = $this->config->getEnv();
         if ($env !== 'test') {
             $this->logger->warning('Environment should equals to "test". Currently it is "' . $env . '" but changed to "test".');
-            Config::setEnv('test');
+            $this->config->setEnv('test');
         }
 
         $this->client = $client;
@@ -60,10 +59,10 @@ class Tester
 
         if ($env !== 'test') {
             $this->logger->info("Reverting back the environment to: '$env'");
-            Config::setEnv($env);
-            $this->logger->info("Environment is '" . Config::getEnv() . "' now.");
+            $this->config->setEnv($env);
+            $this->logger->info("Environment is '" . $this->config->getEnv() . "' now.");
         } else {
-            $this->logger->info("Environment is '" . Config::getEnv() . "' don't forget to revert it back in your " . Config::ENV_FILE);
+            $this->logger->info("Environment is '" . $this->config->getEnv() . "' don't forget to revert it back in your " . Config::ENV_FILE);
         }
     }
 
@@ -161,10 +160,6 @@ class Tester
             "\nTest failed: " . $message .
             "\nTrace:\n" . $e->getTraceAsString();
         echo 'X';
-        if ($this->dieFast) {
-            $this->stat();
-            exit;
-        }
     }
 
     private function ok(): void

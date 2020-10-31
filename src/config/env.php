@@ -1,1 +1,1 @@
-<?php $env='dev';
+<?php $env = 'test';
