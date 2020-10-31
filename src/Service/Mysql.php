@@ -80,6 +80,6 @@ class Mysql
         if (!$this->query($query)) {
             return 0;
         }
-        return $this->mysqli->affected_rows;
+        return (int)$this->mysqli->insert_id;
     }
 }
