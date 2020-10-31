@@ -175,7 +175,7 @@ class Tester
 
     private function fail(string $message): void
     {
-        $this->logger->error('Test failed: ' . $message);
+        $this->logger->fail('Test failed: ' . $message);
         try {
             throw new Exception();
         } catch (Exception $e) {

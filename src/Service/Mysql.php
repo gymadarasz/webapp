@@ -74,4 +74,12 @@ class Mysql
         }
         return $this->mysqli->affected_rows;
     }
+
+    public function insert(string $query): int
+    {
+        if (!$this->query($query)) {
+            return 0;
+        }
+        return $this->mysqli->affected_rows;
+    }
 }
