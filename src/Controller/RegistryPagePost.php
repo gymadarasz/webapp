@@ -1,17 +1,17 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Controller;
+namespace GyMadarasz\WebApp\Controller;
 
-use Madsoft\App\UserErrorException; // TODO avoid user error exception (and all exception where its possible)
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Template;
-use Madsoft\App\Service\Mysql;
-use Madsoft\App\Service\User;
-use Madsoft\App\Service\Globals;
-use Madsoft\App\Service\Logger;
-use Madsoft\App\Service\Mailer;
-use Madsoft\App\Service\EmailValidator;
-use Madsoft\App\Service\PasswordValidator;
+use GyMadarasz\WebApp\UserErrorException; // TODO avoid user error exception (and all exception where its possible)
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Template;
+use GyMadarasz\WebApp\Service\Mysql;
+use GyMadarasz\WebApp\Service\User;
+use GyMadarasz\WebApp\Service\Globals;
+use GyMadarasz\WebApp\Service\Logger;
+use GyMadarasz\WebApp\Service\Mailer;
+use GyMadarasz\WebApp\Service\EmailValidator;
+use GyMadarasz\WebApp\Service\PasswordValidator;
 use Exception;
 
 class RegistryPagePost

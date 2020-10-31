@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 class Globals
 {

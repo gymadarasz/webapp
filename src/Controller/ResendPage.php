@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Controller;
+namespace GyMadarasz\WebApp\Controller;
 
-use Madsoft\App\UserErrorException;
-use Madsoft\App\Service\Template;
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Globals;
-use Madsoft\App\Service\Mailer;
+use GyMadarasz\WebApp\UserErrorException;
+use GyMadarasz\WebApp\Service\Template;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Globals;
+use GyMadarasz\WebApp\Service\Mailer;
 
 class ResendPage
 {

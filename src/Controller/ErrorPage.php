@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Controller;
+namespace GyMadarasz\WebApp\Controller;
 
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Template;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Template;
 
 class ErrorPage
 {

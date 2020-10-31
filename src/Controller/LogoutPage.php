@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Controller;
+namespace GyMadarasz\WebApp\Controller;
 
-use Madsoft\App\Service\Template;
-use Madsoft\App\Service\Globals;
+use GyMadarasz\WebApp\Service\Template;
+use GyMadarasz\WebApp\Service\Globals;
 
 class LogoutPage
 {

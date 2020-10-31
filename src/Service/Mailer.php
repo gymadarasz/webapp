@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use function strip_tags;
 use function file_exists;
@@ -10,8 +10,8 @@ use function is_dir;
 use function date;
 use Exception;
 use RuntimeException;
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Logger;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 

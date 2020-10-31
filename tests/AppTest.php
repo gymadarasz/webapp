@@ -2,9 +2,9 @@
 
 namespace Madsoft\Test;
 
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Logger;
-use Madsoft\App\Service\Mysql;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Logger;
+use GyMadarasz\WebApp\Service\Mysql;
 use Madsoft\Test\Test;
 
 class AppTest implements Test

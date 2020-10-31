@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use function sleep;
 use function password_verify;
@@ -10,9 +10,9 @@ use function base64_encode;
 use function md5;
 use function rand;
 use RuntimeException;
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Globals;
-use Madsoft\App\Service\Mysql;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Globals;
+use GyMadarasz\WebApp\Service\Mysql;
 
 final class User
 {

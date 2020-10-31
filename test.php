@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-use Madsoft\App\Service\Logger;
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Mysql;
+use GyMadarasz\WebApp\Service\Logger;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Mysql;
 use Madsoft\Test\Test;
 use Madsoft\Test\Tester;
 use Madsoft\Test\AppTest;

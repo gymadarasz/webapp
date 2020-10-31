@@ -9,8 +9,8 @@ use function implode;
 use function count;
 use Exception;
 use RuntimeException;
-use Madsoft\App\Service\Config;
-use Madsoft\App\Service\Logger;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Logger;
 use GuzzleHttp\Client;
 
 // TODO add coverage stat

@@ -1,19 +1,19 @@
 <?php declare(strict_types = 1);
 
-use Madsoft\App\Router;
-use Madsoft\App\Controller\LoginPage;
-use Madsoft\App\Controller\RegistryPage;
-use Madsoft\App\Controller\ActivatePage;
-use Madsoft\App\Controller\PasswordResetPage;
-use Madsoft\App\Controller\NewPasswordPage;
-use Madsoft\App\Controller\ResendPage;
-use Madsoft\App\Controller\ErrorPage;
-use Madsoft\App\Controller\LoginPagePost;
-use Madsoft\App\Controller\RegistryPagePost;
-use Madsoft\App\Controller\PasswordResetPagePost;
-use Madsoft\App\Controller\NewPasswordPagePost;
-use Madsoft\App\Controller\IndexPage;
-use Madsoft\App\Controller\LogoutPage;
+use GyMadarasz\WebApp\Router;
+use GyMadarasz\WebApp\Controller\LoginPage;
+use GyMadarasz\WebApp\Controller\RegistryPage;
+use GyMadarasz\WebApp\Controller\ActivatePage;
+use GyMadarasz\WebApp\Controller\PasswordResetPage;
+use GyMadarasz\WebApp\Controller\NewPasswordPage;
+use GyMadarasz\WebApp\Controller\ResendPage;
+use GyMadarasz\WebApp\Controller\ErrorPage;
+use GyMadarasz\WebApp\Controller\LoginPagePost;
+use GyMadarasz\WebApp\Controller\RegistryPagePost;
+use GyMadarasz\WebApp\Controller\PasswordResetPagePost;
+use GyMadarasz\WebApp\Controller\NewPasswordPagePost;
+use GyMadarasz\WebApp\Controller\IndexPage;
+use GyMadarasz\WebApp\Controller\LogoutPage;
 
 include __DIR__ . '/vendor/autoload.php';
 

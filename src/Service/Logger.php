@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use function file_put_contents;
 use function date;
 use function get_class;
 use Exception;
 use RuntimeException;
-use Madsoft\App\Service\Config;
+use GyMadarasz\WebApp\Service\Config;
 
 class Logger
 {

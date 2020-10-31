@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use RuntimeException;
-use Madsoft\App\Service\Config\DevConfig;
-use Madsoft\App\Service\Config\TestConfig;
-use Madsoft\App\Service\Config\LiveConfig;
+use GyMadarasz\WebApp\Service\Config\DevConfig;
+use GyMadarasz\WebApp\Service\Config\TestConfig;
+use GyMadarasz\WebApp\Service\Config\LiveConfig;
 
 class Config
 {

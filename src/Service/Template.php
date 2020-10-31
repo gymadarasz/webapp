@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use function ob_start;
 use function ob_get_contents;
@@ -9,7 +9,7 @@ use function is_array;
 use function is_object;
 use function htmlentities;
 use stdClass;
-use Madsoft\App\Service\Config;
+use GyMadarasz\WebApp\Service\Config;
 
 class Template
 {

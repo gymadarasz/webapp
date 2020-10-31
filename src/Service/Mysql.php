@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App\Service;
+namespace GyMadarasz\WebApp\Service;
 
 use RuntimeException;
 use mysqli;
 use mysqli_result;
-use Madsoft\App\Service\Config;
+use GyMadarasz\WebApp\Service\Config;
 
 class Mysql
 {

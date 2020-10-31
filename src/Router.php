@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Madsoft\App;
+namespace GyMadarasz\WebApp;
 
 use RuntimeException;
 use ReflectionClass;
-use Madsoft\App\Service\Globals;
-use Madsoft\App\Controller\ErrorPage;
+use GyMadarasz\WebApp\Service\Globals;
+use GyMadarasz\WebApp\Controller\ErrorPage;
 
 class Router
 {
