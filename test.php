@@ -8,6 +8,8 @@ use GyMadarasz\Test\Tester;
 use GyMadarasz\Test\AppTest;
 use GuzzleHttp\Client;
 
+include __DIR__ . '/vendor/autoload.php';
+
 // TODO: needs coverage info and more tests (cURL requests merged coverage!!)
 
 ini_set('display_errors', '1');
@@ -20,7 +22,6 @@ error_reporting(E_ALL);
 //     }
 // );
 
-include __DIR__ . '/vendor/autoload.php';
 
 return (new Tester(
     $config = new Config(),
