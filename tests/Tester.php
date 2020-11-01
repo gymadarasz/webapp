@@ -54,6 +54,7 @@ class Tester
                 $test->run($this);
             }
         } catch (Exception $e) {
+            $this->errors[] = '\nException (' . get_class($e) . '): ' . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
             $this->logger->doLogException($e);
         }
 
