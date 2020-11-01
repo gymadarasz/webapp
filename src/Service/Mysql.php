@@ -10,6 +10,7 @@ use GyMadarasz\WebApp\Service\Config;
 class Mysql
 {
     private mysqli $mysqli;
+    private bool $connected = false;
 
     private Config $config;
 
@@ -20,6 +21,9 @@ class Mysql
 
     public function connect(): void
     {
+        if ($this->connected) {
+            return;
+        }
         $this->mysqli = new mysqli($this->config->get('mysqlHost'), $this->config->get('mysqlUser'), $this->config->get('mysqlPassword'), $this->config->get('mysqlDatabase'));
         if ($this->mysqli->connect_error) {
             throw new RuntimeException('MySQL connection error: (' . $this->mysqli->connect_errno . ')' . $this->mysqli->connect_error);
@@ -28,6 +32,7 @@ class Mysql
 
     public function escape(string $value): string
     {
+        $this->connect();
         return $this->mysqli->escape_string($value);
     }
 
@@ -36,6 +41,7 @@ class Mysql
      */
     public function selectOne(string $query): ?array
     {
+        $this->connect();
         $result = $this->mysqli->query($query);
         if ($result instanceof mysqli_result) {
             return $result->fetch_assoc();
@@ -48,6 +54,7 @@ class Mysql
      */
     public function select(string $query): array
     {
+        $this->connect();
         $result = $this->mysqli->query($query);
         if ($result instanceof mysqli_result) {
             $rows = [];
@@ -61,6 +68,7 @@ class Mysql
 
     public function query(string $query): bool
     {
+        $this->connect();
         if ($ret = (bool)$this->mysqli->query($query)) {
             return $ret;
         }

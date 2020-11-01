@@ -13,8 +13,11 @@ class Globals
      * @param mixed $default
      * @return mixed
      */
-    public function getGet(string $name, $default = null)
+    public function getGet(string $name = null, $default = null)
     {
+        if (null === $name) {
+            return $_GET;
+        }
         return isset($_GET[$name]) ? $_GET[$name] : $default;
     }
 
@@ -22,8 +25,11 @@ class Globals
      * @param mixed $default
      * @return mixed
      */
-    public function getPost(string $name, $default = null)
+    public function getPost(string $name = null, $default = null)
     {
+        if (null === $name) {
+            return $_POST;
+        }
         return isset($_POST[$name]) ? $_POST[$name] : $default;
     }
 

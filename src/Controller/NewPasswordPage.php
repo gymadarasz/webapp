@@ -11,14 +11,12 @@ use GyMadarasz\WebApp\Service\Globals;
 class NewPasswordPage
 {
     private Template $template;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
 
-    public function __construct(Template $template, Mysql $mysql, User $user, Globals $globals)
+    public function __construct(Template $template, User $user, Globals $globals)
     {
         $this->template = $template;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
     }
@@ -29,7 +27,6 @@ class NewPasswordPage
     public function run()
     {
         $token = $this->globals->getGet('token');
-        $this->mysql->connect();
         if (!$this->user->doAuthByToken($token)) {
             $output = $this->template->create('pwdchange.html.php');
             $output->set('error', 'Invalid token');

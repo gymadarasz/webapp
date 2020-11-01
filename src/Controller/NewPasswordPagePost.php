@@ -4,7 +4,6 @@ namespace GyMadarasz\WebApp\Controller;
 
 use GyMadarasz\WebApp\UserErrorException;
 use GyMadarasz\WebApp\Service\Template;
-use GyMadarasz\WebApp\Service\Mysql;
 use GyMadarasz\WebApp\Service\User;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\PasswordValidator;
@@ -12,20 +11,17 @@ use GyMadarasz\WebApp\Service\PasswordValidator;
 class NewPasswordPagePost
 {
     private Template $template;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
     private PasswordValidator $passwordValidator;
 
     public function __construct(
         Template $template,
-        Mysql $mysql,
         User $user,
         Globals $globals,
         PasswordValidator $passwordValidator
     ) {
         $this->template = $template;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
         $this->passwordValidator = $passwordValidator;
@@ -37,7 +33,6 @@ class NewPasswordPagePost
     public function run() // TODO needs more negative tests for new password posting
     {
         $token = $this->globals->getGet('token');
-        $this->mysql->connect();
         if (!$this->user->doAuthByToken($token)) {
             throw new UserErrorException('Invalid token');
         }

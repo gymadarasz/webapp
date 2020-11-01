@@ -5,7 +5,6 @@ namespace GyMadarasz\WebApp\Controller;
 use GyMadarasz\WebApp\UserErrorException; // TODO avoid user error exception (and all exception where its possible)
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Template;
-use GyMadarasz\WebApp\Service\Mysql;
 use GyMadarasz\WebApp\Service\User;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\Logger;
@@ -18,7 +17,6 @@ class RegistryPagePost
 {
     private Template $template;
     private Config $config;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
     private Logger $logger;
@@ -29,7 +27,6 @@ class RegistryPagePost
     public function __construct(
         Template $template,
         Config $config,
-        Mysql $mysql,
         User $user,
         Globals $globals,
         Logger $logger,
@@ -39,7 +36,6 @@ class RegistryPagePost
     ) {
         $this->template = $template;
         $this->config = $config;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
         $this->logger = $logger;
@@ -89,7 +85,6 @@ class RegistryPagePost
         if ($passwordError = $this->passwordValidator->getPasswordError($password)) {
             throw new UserErrorException($passwordError);
         }
-        $this->mysql->connect();
         $token = $this->user->createUser($email, $password);
         $this->globals->setSession('resend', [
             'email' => $email,

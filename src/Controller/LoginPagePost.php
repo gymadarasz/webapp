@@ -10,14 +10,12 @@ use GyMadarasz\WebApp\Service\Globals;
 class LoginPagePost
 {
     private Template $template;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
 
-    public function __construct(Template $template, Mysql $mysql, User $user, Globals $globals)
+    public function __construct(Template $template, User $user, Globals $globals)
     {
         $this->template = $template;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
     }
@@ -27,7 +25,6 @@ class LoginPagePost
      */
     public function run()
     {
-        $this->mysql->connect();
         if ($this->user->doAuth(
             $this->globals->getPost('email', ''),
             $this->globals->getPost('password', '')

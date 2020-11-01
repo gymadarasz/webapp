@@ -12,15 +12,13 @@ class ActivatePage
 {
     private Config $config;
     private Template $template;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
 
-    public function __construct(Config $config, Template $template, Mysql $mysql, User $user, Globals $globals)
+    public function __construct(Config $config, Template $template, User $user, Globals $globals)
     {
         $this->config = $config;
         $this->template = $template;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
     }
@@ -30,7 +28,6 @@ class ActivatePage
      */
     public function run()
     {
-        $this->mysql->connect();
         if ($this->user->doActivate($this->globals->getGet('token'))) {
             $output = $this->template->create('login.html.php');
             $output->set('message', 'Your account is now activated.');

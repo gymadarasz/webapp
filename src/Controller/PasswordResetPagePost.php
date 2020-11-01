@@ -5,7 +5,6 @@ namespace GyMadarasz\WebApp\Controller;
 use GyMadarasz\WebApp\UserErrorException;
 use GyMadarasz\WebApp\Service\Template;
 use GyMadarasz\WebApp\Service\Config;
-use GyMadarasz\WebApp\Service\Mysql;
 use GyMadarasz\WebApp\Service\User;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\Mailer;
@@ -15,7 +14,6 @@ class PasswordResetPagePost
 {
     private Template $template;
     private Config $config;
-    private Mysql $mysql;
     private User $user;
     private Globals $globals;
     private Mailer $mailer;
@@ -24,7 +22,6 @@ class PasswordResetPagePost
     public function __construct(
         Template $template,
         Config $config,
-        Mysql $mysql,
         User $user,
         Globals $globals,
         Mailer $mailer,
@@ -32,7 +29,6 @@ class PasswordResetPagePost
     ) {
         $this->template = $template;
         $this->config = $config;
-        $this->mysql = $mysql;
         $this->user = $user;
         $this->globals = $globals;
         $this->mailer = $mailer;
@@ -59,7 +55,6 @@ class PasswordResetPagePost
         if (!$this->emailValidator->isValidEmail($email)) {
             return false;
         }
-        $this->mysql->connect();
         $token = $this->user->createToken($email);
         if (!$token) {
             return false;

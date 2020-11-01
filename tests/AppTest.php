@@ -28,7 +28,6 @@ class AppTest implements Test
     {
         $this->logger->test('I am going to delete all users from database.');
 
-        $this->mysql->connect();
         $this->mysql->query("DELETE FROM user WHERE email = '" . AppTest::USER_EMAIL . "';");
     }
 
