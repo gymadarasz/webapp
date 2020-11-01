@@ -395,7 +395,7 @@ class AppTest implements Test
 
     protected function checkErrorPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Error page properly.');
+        $this->logger->test('I am going to check that I can see the Error page properly.');
 
         $tester->assertContains('<h1>Error</h1>', $contents);
         $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '">Back</a>', $contents);
@@ -403,7 +403,7 @@ class AppTest implements Test
 
     protected function checkLoginPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Login page properly.');
+        $this->logger->test('I am going to check that I can see the Login page properly.');
 
         $tester->assertContains('<h1>Login</h1>', $contents);
         $tester->assertContains('<form method="POST" action="?q=">', $contents);
@@ -416,7 +416,7 @@ class AppTest implements Test
 
     protected function checkRegistryPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Registry page properly.');
+        $this->logger->test('I am going to check that I can see the Registry page properly.');
 
         $tester->assertContains('<h1>Registry</h1>', $contents);
         $tester->assertContains('<input type="email" name="email"', $contents);
@@ -430,7 +430,7 @@ class AppTest implements Test
 
     protected function checkPasswordResetPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Password Reset page properly.');
+        $this->logger->test('I am going to check that I can see the Password Reset page properly.');
 
         $tester->assertContains('<h1>Password reset</h1>', $contents);
         $tester->assertContains('<input type="email" name="email"', $contents);
@@ -439,7 +439,7 @@ class AppTest implements Test
 
     protected function checkIndexPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Index page properly.');
+        $this->logger->test('I am going to check that I can see the Index page properly.');
 
         $tester->assertContains('<h1>Index</h1>', $contents);
         $tester->assertContains('<a href="?q=logout">Logout</a>', $contents);
@@ -447,7 +447,7 @@ class AppTest implements Test
 
     protected function checkChangePasswordPage(Tester $tester, string $contents): void
     {
-        $this->logger->test('I am check that I can see the Change Password page properly.');
+        $this->logger->test('I am going to check that I can see the Change Password page properly.');
 
         $tester->assertContains('<h1>Change password</h1>', $contents);
         $tester->assertContains('<input type="password" name="password"', $contents);
@@ -457,27 +457,27 @@ class AppTest implements Test
     
     protected function checkPageContainsMessage(Tester $tester, string $contents, string $message): void
     {
-        $this->logger->test('I am check that I can see the message "' . $message . '" on the page.');
+        $this->logger->test('I am going to check that I can see the message "' . $message . '" on the page.');
 
         $tester->assertContains('<div class="message">' . $message . '</div>', $contents);
     }
 
     protected function checkPageContainsError(Tester $tester, string $contents, string $error): void
     {
-        $this->logger->test('I am check that I can see the error "' . $error . '" on the page.');
+        $this->logger->test('I am going to check that I can see the error "' . $error . '" on the page.');
 
         $tester->assertContains('<div class="message red">' . $error . '</div>', $contents);
     }
 
     protected function checkMail(Tester $tester, string $subject): string
     {
-        $this->logger->test('I am check that I have got an email with subject "' . $subject . '".');
+        $this->logger->test('I am going to check that I have got an email with subject "' . $subject . '".');
 
         $files = (array)glob($this->config->get('mailerSaveMailsPath') . '/*.*');
         $tester->assertCount(1, $files);
-        $tester->assertContains(AppTest::USER_EMAIL, (string)$files[0]);
-        $tester->assertContains($subject, (string)$files[0]);
-        return (string)file_get_contents((string)$files[0]);
+        $tester->assertContains(AppTest::USER_EMAIL, (string)($files[0] ?? ''));
+        $tester->assertContains($subject, (string)($files[0] ?? ''));
+        return (string)($files[0] ?? '') ? (string)file_get_contents((string)($files[0] ?? '')) : '';
     }
 
     protected function checkRegistrationEmail(Tester $tester, string $email): string
@@ -488,7 +488,7 @@ class AppTest implements Test
         $tester->assertContains('please activate your account by click on the following link or copy to your browser address line:<br>', $email);
         $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
         $tester->assertContains('">' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
-        $token = explode('">', explode('&token=', $email)[1])[0];
+        $token = explode('">', explode('&token=', $email)[1] ?? '')[0] ?? '';
         $tester->assertLongerThan(40, $token);
         return $token;
     }
