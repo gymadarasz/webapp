@@ -9,7 +9,6 @@ use GyMadarasz\WebApp\Controller\PasswordResetPage;
 use GyMadarasz\WebApp\Controller\NewPasswordPage;
 use GyMadarasz\WebApp\Controller\ResendPage;
 use GyMadarasz\WebApp\Controller\ErrorPage;
-use GyMadarasz\WebApp\Controller\LoginPagePost;
 use GyMadarasz\WebApp\Controller\RegistryPagePost;
 use GyMadarasz\WebApp\Controller\PasswordResetPagePost;
 use GyMadarasz\WebApp\Controller\NewPasswordPagePost;
@@ -21,43 +20,43 @@ class RouteSet
     const APP_ROUTES = [
         'public' => [
             'GET' => [
-                '' => [LoginPage::class, 'run'],
-                'login' => [LoginPage::class, 'run'],
-                'registry' => [RegistryPage::class, 'run'],
-                'activate' => [ActivatePage::class, 'run'],
-                'pwdreset' => [PasswordResetPage::class, 'run'],
-                'newpassword' => [NewPasswordPage::class, 'run'],
-                'resend' => [ResendPage::class, 'run'],
-                '*' => [ErrorPage::class, 'run'],
+                '' => [LoginPage::class, 'viewLogin'],
+                'login' => [LoginPage::class, 'viewLogin'],
+                'registry' => [RegistryPage::class, 'viewRegistry'],
+                'activate' => [ActivatePage::class, 'viewActivate'],
+                'pwdreset' => [PasswordResetPage::class, 'viewPasswordReset'],
+                'newpassword' => [NewPasswordPage::class, 'viewNewPassword'],
+                'resend' => [ResendPage::class, 'viewResend'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
             'POST' => [
-                '' => [LoginPagePost::class, 'run'],
-                'login' => [LoginPagePost::class, 'run'],
-                'registry' => [RegistryPagePost::class, 'run'],
-                'pwdreset' => [PasswordResetPagePost::class, 'run'],
-                'newpassword' => [NewPasswordPagePost::class, 'run'],
-                '*' => [ErrorPage::class, 'run'],
+                '' => [LoginPage::class, 'doLogin'],
+                'login' => [LoginPage::class, 'doLogin'],
+                'registry' => [RegistryPagePost::class, 'doRegistry'],
+                'pwdreset' => [PasswordResetPagePost::class, 'doPasswordReset'],
+                'newpassword' => [NewPasswordPage::class, 'doNewPassword'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
             '*' => [
-                '*' => [ErrorPage::class, 'run'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
         ],
         'protected' => [
             'GET' => [
-                '' => [IndexPage::class, 'run'],
-                'logout' => [LogoutPage::class, 'run'],
-                '*' => [ErrorPage::class, 'run'],
+                '' => [IndexPage::class, 'viewIndex'],
+                'logout' => [LogoutPage::class, 'viewLogout'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
             'POST' => [
-                '*' => [ErrorPage::class, 'run'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
             '*' => [
-                '*' => [ErrorPage::class, 'run'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
         ],
         '*' => [
             '*' => [
-                '*' => [ErrorPage::class, 'run'],
+                '*' => [ErrorPage::class, 'viewError'],
             ],
         ],
     ];

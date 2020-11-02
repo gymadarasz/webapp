@@ -7,23 +7,11 @@ use GyMadarasz\WebApp\Service\Template;
 
 class ErrorPage
 {
-    private Config $config;
-    private Template $template;
-
-    public function __construct(Config $config, Template $template)
+    public function viewError(Config $config, Template $template): Template
     {
-        $this->config = $config;
-        $this->template = $template;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function run()
-    {
-        $output = $this->template->create('error-page.html.php');
+        $output = $template->create('error-page.html.php');
         $output->set('error', 'Request is not supported.');
-        $output->set('base', $this->config->get('baseUrl'));
+        $output->set('base', $config->get('baseUrl'));
         return $output;
     }
 }

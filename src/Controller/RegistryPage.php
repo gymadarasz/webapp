@@ -6,18 +6,8 @@ use GyMadarasz\WebApp\Service\Template;
 
 class RegistryPage
 {
-    private Template $template;
-
-    public function __construct(Template $template)
+    public function viewRegistry(Template $template): Template
     {
-        $this->template = $template;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function run()
-    {
-        return $this->template->create('registry.html.php');
+        return $template->create('registry.html.php');
     }
 }

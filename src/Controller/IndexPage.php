@@ -6,18 +6,8 @@ use GyMadarasz\WebApp\Service\Template;
 
 class IndexPage
 {
-    private Template $template;
-
-    public function __construct(Template $template)
+    public function viewIndex(Template $template): Template
     {
-        $this->template = $template;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function run()
-    {
-        return $this->template->create('index.html.php');
+        return $template->create('index.html.php');
     }
 }

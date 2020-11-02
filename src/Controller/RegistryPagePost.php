@@ -44,13 +44,10 @@ class RegistryPagePost
         $this->passwordValidator = $passwordValidator;
     }
 
-    /**
-     * @return mixed
-     */
-    public function run()
+    public function doRegistry(): Template
     {
         try {
-            $this->doRegister(
+            $this->registry(
                 $this->globals->getPost('email', ''),
                 $this->globals->getPost('email_retype', ''),
                 $this->globals->getPost('password', '')
@@ -71,7 +68,7 @@ class RegistryPagePost
         return $output;
     }
 
-    private function doRegister(string $email, string $emailRetype, string $password): void
+    private function registry(string $email, string $emailRetype, string $password): void
     {
         if (!$email) {
             throw new UserErrorException('Email can not be empty');

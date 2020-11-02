@@ -3,21 +3,29 @@
 namespace GyMadarasz\WebApp\Controller;
 
 use GyMadarasz\WebApp\Service\Template;
+use GyMadarasz\WebApp\Service\User;
+use GyMadarasz\WebApp\Service\Globals;
 
 class LoginPage
 {
-    private Template $template;
-
-    public function __construct(Template $template)
+    public function viewLogin(Template $template): Template
     {
-        $this->template = $template;
+        return $template->create('login.html.php');
     }
 
-    /**
-     * @return mixed
-     */
-    public function run()
+    public function doLogin(Template $template, User $user, Globals $globals): Template
     {
-        return $this->template->create('login.html.php');
+        if ($user->doAuth(
+            $globals->getPost('email', ''),
+            $globals->getPost('password', '')
+        )) {
+            $output = $template->create('index.html.php');
+            $output->set('message', 'Login success');
+        } else {
+            $output = $template->create('login.html.php');
+            $output->set('error', 'Login failed');
+        }
+
+        return $output;
     }
 }

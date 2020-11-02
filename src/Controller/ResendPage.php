@@ -27,10 +27,7 @@ class ResendPage
         $this->mailer = $mailer;
     }
 
-    /**
-     * @return mixed
-     */
-    public function run()
+    public function viewResend(): Template
     {
         $output = $this->template->create('login.html.php');
         $output->setAsItIs('message', 'Attempt to resend activation email, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');

@@ -4,6 +4,7 @@ namespace GyMadarasz\WebApp;
 
 use RuntimeException;
 use ReflectionClass;
+use ReflectionMethod;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Controller\ErrorPage;
 
@@ -33,8 +34,8 @@ class Router
         $routes = $routes[$globals->getMethod()] ?? $routes['*'];
         $routes = $routes[$globals->getGet('q', '')] ?? $routes['*'];
         
-        $ctrlr = $this->getInstance($routes[0]);
-        $results = $ctrlr->{$routes[1]}();
+        $results = $this->invoke($routes);
+        // $results = $ctrlr->{$routes[1]}();
         if (is_array($results) || (is_object($results) && !method_exists($results, '__toString'))) {
             $results = json_encode($results);
         }
@@ -42,7 +43,19 @@ class Router
     }
 
     /**
+     * @param array<string> $route
      * @return mixed
+     */
+    private function invoke(array $route)
+    {
+        $ctrlr = $this->getInstance($route[0]);
+        $method = $ctrlr[1]->getMethod($route[1]);
+        $args = $this->getArgs($method, 'Method ' . $route[0] . '::' . $route[1] . ' has an or more non-class typed parameters.');
+        return $ctrlr[0]->{$route[1]}(...$args);
+    }
+
+    /**
+     * @return array<mixed>
      */
     private function getInstance(string $class)
     {
@@ -52,19 +65,29 @@ class Router
         if (!class_exists($class)) {
             throw new RuntimeException('Class not exists: "' . $class . '"');
         }
-        $constructor = (new ReflectionClass($class))->getConstructor();
+        $refClass = new ReflectionClass($class);
+        $constructor = ($refClass)->getConstructor();
         if (!$constructor) {
-            return $this->instances[$class] = new $class;
+            return $this->instances[$class] = [new $class, $refClass];
         }
-        $params = $constructor->getParameters();
+        $args = $this->getArgs($constructor, 'Method ' . $class . '::__constructor() has an or more non-class typed parameters.');
+        return $this->instances[$class] = [new $class(...$args), $refClass];
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    private function getArgs(ReflectionMethod $method, string $messageOnError = 'A method has a parameter which cannot be instantiated.'): array
+    {
+        $params = $method->getParameters();
         $args = [];
         foreach ($params as $param) {
             $paramClass = $param->getClass();
             if (!$paramClass) {
-                throw new RuntimeException('Class ' . $class . '::__constructor() has an or more non-class typed parameters.');
+                throw new RuntimeException($messageOnError);
             }
-            $args[] = $this->getInstance($paramClass->name);
+            $args[] = $this->getInstance($paramClass->name)[0];
         }
-        return $this->instances[$class] = new $class(...$args);
+        return $args;
     }
 }

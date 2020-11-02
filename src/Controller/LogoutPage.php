@@ -7,22 +7,10 @@ use GyMadarasz\WebApp\Service\Globals;
 
 class LogoutPage
 {
-    private Template $template;
-    private Globals $globals;
-
-    public function __construct(Template $template, Globals $globals)
+    public function viewLogout(Template $template, Globals $globals): Template
     {
-        $this->template = $template;
-        $this->globals = $globals;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function run()
-    {
-        $this->globals->sessionDestroy();
-        $output = $this->template->create('login.html.php');
+        $globals->sessionDestroy();
+        $output = $template->create('login.html.php');
         $output->set('message', 'Logout success');
 
         return $output;

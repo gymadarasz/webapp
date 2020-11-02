@@ -35,13 +35,10 @@ class PasswordResetPagePost
         $this->emailValidator = $emailValidator;
     }
 
-    /**
-     * @return mixed
-     */
-    public function run()
+    public function doPasswordReset(): Template
     {
         $output = $this->template->create('login.html.php');
-        if ($this->doPasswordReset($this->globals->getPost('email', ''))) {
+        if ($this->resetPassword($this->globals->getPost('email', ''))) {
             $output->set('message', 'We sent an email to your inbox, please follow the given instructions to change your password');
         } else {
             $output->set('error', 'Request for password reset is failed');
@@ -50,7 +47,7 @@ class PasswordResetPagePost
         return $output;
     }
 
-    private function doPasswordReset(string $email): bool
+    private function resetPassword(string $email): bool
     {
         if (!$this->emailValidator->isValidEmail($email)) {
             return false;

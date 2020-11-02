@@ -6,18 +6,8 @@ use GyMadarasz\WebApp\Service\Template;
 
 class PasswordResetPage
 {
-    private Template $template;
-
-    public function __construct(Template $template)
+    public function viewPasswordReset(Template $template): Template
     {
-        $this->template = $template;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function run()
-    {
-        return $this->template->create('pwdreset.html.php');
+        return $template->create('pwdreset.html.php');
     }
 }
