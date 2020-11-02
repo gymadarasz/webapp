@@ -196,4 +196,145 @@ class Tester
         $this->passes++;
         echo ".";
     }
+
+
+    /**
+     * @return array<mixed>
+     */
+    public function getInputFieldValue(string $type, string $name, string $contents): array
+    {
+        if (!preg_match_all('/<input\s+type\s*=\s*"' . $type . '"\s*name\s*=\s*"' . preg_quote($name) . '"\s*value=\s*"([^"]*)"/', $contents, $matches)) {
+            throw new RuntimeException('Input element not found:  <input type="' . $type . '" name="' . $name . '" value=...>');
+        }
+        if (!isset($matches[1]) || !isset($matches[1][0])) {
+            throw new RuntimeException('Input element does not have a value: <input type="' . $type . '" name="' . $name . '" value=...>');
+        }
+        return $matches[1];
+    }
+    /** @return array<string> */
+    public function getLinks(string $hrefStarts, string $contents): array
+    {
+        if (!preg_match_all('/<a href="(' . preg_quote($hrefStarts) . '[^"]*)"/', $contents, $matches)) {
+            return [];
+        }
+        return $matches[1];
+    }
+
+
+    /**
+     * @return array<array<string>>
+     */
+    public function getSelectsValues(string $name, string $contents): array
+    {
+        $selects = $this->getSelectFieldContents($name, $contents);
+        $selectsValues = [];
+        foreach ($selects as $select) {
+            $options = $this->getSelectOptions($select);
+            $values = [];
+            foreach ($options as $option) {
+                $values[] = $this->getOptionValue($option);
+            }
+            $selectsValues[] = $values;
+        }
+        return $selectsValues;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOptionValue(string $option): string
+    {
+        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)) {
+            throw new RuntimeException('Unrecognised value in option: ' . $option); // TODO check inner text??
+        }
+        return $matches[1];
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getSelectOptions(string $select): array
+    {
+        if (!preg_match_all('/<option(.+?)<\/option>/s', $select, $matches)) {
+            return [];
+        }
+        return $matches[0];
+    }
+
+
+    /**
+     * @return array<string>
+     */
+    public function getSelectFieldValue(string $name, string $contents): array
+    {
+        $selects = $this->getSelectFieldContents($name, $contents);
+        $values = [];
+        foreach ($selects as $select) {
+            $multiple = $this->isMultiSelectField($select);
+            unset($value);
+            if ($options = $this->getOptionFieldContents($select)) {
+                if ($multiple) {
+                    $value = [];
+                    foreach ($options as $option) {
+                        if ($this->isOptionSelected($option)) {
+                            $value[] = $this->getOptionFieldValue($option);
+                        }
+                    }
+                } else {
+                    foreach ($options as $option) {
+                        if ($this->isOptionSelected($option) || !isset($value)) {
+                            $value = $this->getOptionFieldValue($option);
+                        }
+                    }
+                    $values[] = $value;
+                }
+            } else {
+                throw new RuntimeException('A select element has not any option: ' . explode('\n', $select)[0] . '...');
+            }
+        }
+        return $values;
+    }
+
+    public function getOptionFieldValue(string $option): string
+    {
+        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)) {
+            throw new RuntimeException('Unrecognised value in option: ' . $option);
+        }
+        return $matches[1];
+    }
+
+    public function isOptionSelected(string $option): bool
+    {
+        return (bool)preg_match('/<option\s[^>]*\bselected\b/', $option, $matches);
+    }
+
+    public function isMultiSelectField(string $select): bool
+    {
+        return (bool)preg_match('/<select\s[^>]*\bmultiple\b/', $select, $matches);
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getOptionFieldContents(string $select): array
+    {
+        if (!preg_match_all('/<option(.+?)<\/option>/s', $select, $matches)) {
+            throw new RuntimeException('Unrecognised options');
+        }
+        return $matches[0];
+    }
+    
+    /**
+     * @return array<string>
+     */
+    public function getSelectFieldContents(string $name, string $contents): array
+    {
+        if (!preg_match_all('/<select\s+name\s*=\s*"' . preg_quote($name) . '"(.+?)<\/select>/s', $contents, $matches)) {
+            throw new RuntimeException('Select element not found: <select name="' . $name . '"...</select>');
+        }
+        if (!isset($matches[0])) {
+            throw new RuntimeException('Select element does not have a value: <select name="' . $name . '"...</select>');
+        }
+        return $matches[0];
+    }
 }
