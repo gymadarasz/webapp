@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use GyMadarasz\WebApp\Router;
+use GyMadarasz\WebApp\Service\Invoker;
 use GyMadarasz\WebApp\Service\RouteSet;
 
 include __DIR__ . '/vendor/autoload.php';
@@ -18,6 +19,7 @@ set_error_handler(
 new Router(
     (new RouteSet())
         ->apply(RouteSet::APP_ROUTES)
-        ->getRoutes()
+        ->getRoutes(),
+    new Invoker()
 );
 

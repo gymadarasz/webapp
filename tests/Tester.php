@@ -9,6 +9,7 @@ use function implode;
 use function count;
 use Exception;
 use RuntimeException;
+use GyMadarasz\WebApp\Service\Invoker;
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Logger;
 use GuzzleHttp\Client;
@@ -27,9 +28,9 @@ class Tester
     private int $passes;
 
     /**
-     * @param array<Test> $tests
+     * @param array<string> $tests
      */
-    public function __construct(Config $config, Logger $logger, Client $client, array $tests)
+    public function test(Invoker $invoker, Config $config, Logger $logger, Client $client, array $tests): self
     {
         if (php_sapi_name() !== 'cli') {
             throw new RuntimeException('Test can run only from command line.');
@@ -51,7 +52,8 @@ class Tester
 
         try {
             foreach ($tests as $test) {
-                $test->run($this);
+                echo $invoker->invoke([$test, 'test'], [$this]);
+                // $test->run($this);
             }
         } catch (Exception $e) {
             $this->errors[] = '\nException (' . get_class($e) . '): ' . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
@@ -65,6 +67,8 @@ class Tester
         } else {
             $this->logger->info("Environment is '" . $this->config->getEnv() . "' don't forget to revert it back in your " . Config::ENV_FILE);
         }
+
+        return $this;
     }
 
     public function get(string $url): string

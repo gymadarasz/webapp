@@ -14,9 +14,18 @@ use GyMadarasz\WebApp\Controller\PasswordResetPagePost;
 use GyMadarasz\WebApp\Controller\NewPasswordPagePost;
 use GyMadarasz\WebApp\Controller\IndexPage;
 use GyMadarasz\WebApp\Controller\LogoutPage;
+use RuntimeException;
 
 class RouteSet
 {
+    const NO_ROUTES = [
+        '*' => [
+            '*' => [
+                '*' => [self::class, 'noRoute'],
+            ],
+        ],
+    ];
+
     const APP_ROUTES = [
         'public' => [
             'GET' => [
@@ -100,5 +109,10 @@ class RouteSet
         }
 
         return $merged;
+    }
+
+    public function noRoute(): void
+    {
+        throw new RuntimeException('No route defined');
     }
 }

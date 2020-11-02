@@ -5,20 +5,21 @@ namespace GyMadarasz\Test;
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Logger;
 use GyMadarasz\WebApp\Service\Mysql;
-use GyMadarasz\Test\Test;
 
-class AppTest implements Test
+class AppTest
 {
     const USER_EMAIL = 'tester@example.com';
     const USER_PASSWORD_OLD = 'OldPassword123!';
     const USER_PASSWORD = 'Pass1234';
 
+    protected Tester $tester;
     protected Config $config;
     protected Logger $logger;
     protected Mysql $mysql;
 
-    public function __construct(Config $config, Logger $logger, Mysql $mysql)
+    public function __construct(Tester $tester, Config $config, Logger $logger, Mysql $mysql)
     {
+        $this->tester = $tester;
         $this->config = $config;
         $this->logger = $logger;
         $this->mysql = $mysql;
@@ -47,463 +48,471 @@ class AppTest implements Test
         $this->cleanupMails();
     }
 
-    public function run(Tester $tester): void
+    public function test(): void
     {
+
         // ----- clean up -----
         $this->cleanup();
 
         // ------- tests ----------
-        $this->checkRegistryLoginAndPasswordResetProcess($tester);
-        $this->checkLoginAfterLoginShouldFails($tester);
-        $this->checkInvalidRegistryShouldFails($tester);
-        $this->checkInvalidPasswordResetShouldFails($tester);
+        $this->checkRegistryLoginAndPasswordResetProcess();
+        $this->checkLoginAfterLoginShouldFails();
+        $this->checkInvalidRegistryShouldFails();
+        $this->checkInvalidPasswordResetShouldFails();
 
         // ----- clean up -----
         //$this->cleanup();
     }
 
-    protected function checkRegistryLoginAndPasswordResetProcess(Tester $tester): void
+    protected function checkRegistryLoginAndPasswordResetProcess(): void
     {
         $this->logger->test('I am going to the Login page.');
 
-        $contents = $tester->get('');
-        $this->checkLoginPage($tester, $contents);
+        $contents = $this->tester->get('');
+        $this->checkLoginPage($contents);
 
 
         $this->logger->test('I am posting my account, but it should fails because I am not registered.');
 
-        $contents = $tester->post('', [
+        $contents = $this->tester->post('', [
             'email' => AppTest::USER_EMAIL,
             'password' => AppTest::USER_PASSWORD_OLD,
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Login failed');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsError($contents, 'Login failed');
 
 
         $this->logger->test('I am going to Register page.');
 
-        $contents = $tester->get('?q=registry');
-        $this->checkRegistryPage($tester, $contents);
+        $contents = $this->tester->get('?q=registry');
+        $this->checkRegistryPage($contents);
 
 
         $this->logger->test('I am posting my registry details to the Register page.');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => AppTest::USER_EMAIL,
             'email_retype' => AppTest::USER_EMAIL,
             'password' => AppTest::USER_PASSWORD_OLD,
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Registration success, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Registration success, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
 
 
         $this->logger->test('I am going to check my activation email.');
 
-        $email = $this->checkMail($tester, 'Activate your account');
-        $token = $this->checkRegistrationEmail($tester, $email);
+        $email = $this->checkMail('Activate your account');
+        $token = $this->checkRegistrationEmail($email);
         $this->cleanupMails();
 
 
         $this->logger->test('I am going to click on resend link.');
 
-        $contents = $tester->get('?q=resend');
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Attempt to resend activation email, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
+        $contents = $this->tester->get('?q=resend');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Attempt to resend activation email, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
 
 
         $this->logger->test('I am posting my account details to Login page, but it should fails because I am not activated my newly registered account.');
 
-        $contents = $tester->post('', [
+        $contents = $this->tester->post('', [
             'email' => AppTest::USER_EMAIL,
             'password' => AppTest::USER_PASSWORD_OLD,
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Login failed');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsError($contents, 'Login failed');
 
 
         $this->logger->test('I am going to check my activation email.');
 
-        $email = $this->checkMail($tester, 'Activate your account');
-        $token = $this->checkRegistrationEmail($tester, $email);
+        $email = $this->checkMail('Activate your account');
+        $token = $this->checkRegistrationEmail($email);
         $this->cleanupMails();
 
 
         $this->logger->test('I am going to try to activate my account with an incorrect activation token.');
 
-        $contents = $tester->get($this->config->get('baseUrl') . '?q=activate&token=incorrect');
-        $this->checkErrorPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Activation token is incorrect.');
+        $contents = $this->tester->get($this->config->get('baseUrl') . '?q=activate&token=incorrect');
+        $this->checkErrorPage($contents);
+        $this->checkPageContainsError($contents, 'Activation token is incorrect.');
 
 
         $this->logger->test('I am going to activate my account with the correct activation token.');
 
-        $contents = $tester->get($this->config->get('baseUrl') . '?q=activate&token=' . $token);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Your account is now activated.');
+        $contents = $this->tester->get($this->config->get('baseUrl') . '?q=activate&token=' . $token);
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Your account is now activated.');
 
 
         $this->logger->test('I am just check if I am activated in the database properly?');
-        
-        $tester->assertEquals(
+        $results = $this->mysql->selectOne(
+            "SELECT active FROM user WHERE email = '" . AppTest::USER_EMAIL . "' LIMIT 1;"
+        );
+        $this->tester->assertTrue(isset($results['active']));
+        $this->tester->assertEquals(
             1,
-            (int)((array)$this->mysql->selectOne(
-                "SELECT active FROM user WHERE email = '" . AppTest::USER_EMAIL . "' LIMIT 1;"
-            ))['active']
+            (int)((array)$results)['active']
         );
 
 
         $this->logger->test('I am going to post my newly registered account details.');
-        $contents = $this->checkIfICanLogin($tester, AppTest::USER_EMAIL, AppTest::USER_PASSWORD_OLD);
-        $this->checkIndexPage($tester, $contents);
+        $contents = $this->checkIfICanLogin(AppTest::USER_EMAIL, AppTest::USER_PASSWORD_OLD);
+        $this->checkIndexPage($contents);
         
 
         $this->logger->test('I am going to the restricted Index page.');
 
-        $contents = $tester->get('');
-        $this->checkIndexPage($tester, $contents);
+        $contents = $this->tester->get('');
+        $this->checkIndexPage($contents);
 
 
         $this->logger->test('I am going to Logout.');
 
-        $contents = $tester->get('?q=logout');
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Logout success');
+        $contents = $this->tester->get('?q=logout');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Logout success');
 
 
         $this->logger->test('I am going to reset my password.');
 
-        $contents = $tester->get('?q=pwdreset');
-        $this->checkPasswordResetPage($tester, $contents);
+        $contents = $this->tester->get('?q=pwdreset');
+        $this->checkPasswordResetPage($contents);
 
 
         $this->logger->test('I am going to post my email address to Password Reset page.');
 
-        $contents = $tester->post('?q=pwdreset', [
+        $contents = $this->tester->post('?q=pwdreset', [
             'email' => AppTest::USER_EMAIL,
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'We sent an email to your inbox, please follow the given instructions to change your password');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'We sent an email to your inbox, please follow the given instructions to change your password');
 
 
         $this->logger->test('I am going to check my emails for password reset instructions.');
         
-        $email = $this->checkMail($tester, 'Password reset request');
-        $token = $this->checkPasswordResetEmail($tester, $email);
+        $email = $this->checkMail('Password reset request');
+        $token = $this->checkPasswordResetEmail($email);
         $this->cleanupMails();
 
 
         $this->logger->test('I am going to check the Password Reset page with an incorrect token.');
 
-        $contents = $tester->get($this->config->get('baseUrl') . '?q=newpassword&token=invalid');
-        $this->checkChangePasswordPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Invalid token');
+        $contents = $this->tester->get($this->config->get('baseUrl') . '?q=newpassword&token=invalid');
+        $this->checkChangePasswordPage($contents);
+        $this->checkPageContainsError($contents, 'Invalid token');
 
 
         $this->logger->test('I am going to follow the Password Reset link to the Password Reset page.');
 
-        $contents = $tester->get($this->config->get('baseUrl') . '?q=newpassword&token=' . $token);
-        $this->checkChangePasswordPage($tester, $contents);
+        $contents = $this->tester->get($this->config->get('baseUrl') . '?q=newpassword&token=' . $token);
+        $this->checkChangePasswordPage($contents);
 
 
         $this->logger->test('I am going to post my new password to reset my password.');
 
-        $contents = $tester->post($this->config->get('baseUrl') . '?q=newpassword&token=' . $token, [
+        $contents = $this->tester->post($this->config->get('baseUrl') . '?q=newpassword&token=' . $token, [
             'password' => AppTest::USER_PASSWORD,
             'password_retype' => AppTest::USER_PASSWORD,
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Your password changed, please log in');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Your password changed, please log in');
 
 
         $this->logger->test('I am going to login with my new password');
-        $contents = $this->checkIfICanLogin($tester);
-        $this->checkIndexPage($tester, $contents);
+        $contents = $this->checkIfICanLogin();
+        $this->checkIndexPage($contents);
 
         $this->logger->test('I am going to the restricted Index page.');
 
-        $contents = $tester->get('');
-        $this->checkIndexPage($tester, $contents);
+        $contents = $this->tester->get('');
+        $this->checkIndexPage($contents);
 
 
         $this->logger->test('I am going to a non-exists page while I am logged in to see it shows the error page.');
 
-        $contents = $tester->get('?q=this-page-should-not-exists');
-        $this->checkErrorPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request is not supported.');
+        $contents = $this->tester->get('?q=this-page-should-not-exists');
+        $this->checkErrorPage($contents);
+        $this->checkPageContainsError($contents, 'Request is not supported.');
         
 
         $this->logger->test('I am going to Logout.');
 
-        $contents = $tester->get('?q=logout');
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Logout success');
+        $contents = $this->tester->get('?q=logout');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Logout success');
 
 
         $this->logger->test('I am going to a non-exists page while I am logged out to see it shows the error page.');
 
-        $contents = $tester->get('?q=this-page-should-not-exists');
-        $this->checkErrorPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request is not supported.');
+        $contents = $this->tester->get('?q=this-page-should-not-exists');
+        $this->checkErrorPage($contents);
+        $this->checkPageContainsError($contents, 'Request is not supported.');
     }
 
-    protected function checkIfICanLogin(Tester $tester, string $user = AppTest::USER_EMAIL, string $password = AppTest::USER_PASSWORD): string
+    protected function checkIfICanLogin(string $user = AppTest::USER_EMAIL, string $password = AppTest::USER_PASSWORD): string
     {
         $this->logger->test("I am going to post these login credentials: user: '$user' / password: '$password'");
 
-        $contents = $tester->post('?q=', [
+        $contents = $this->tester->post('?q=', [
             'email' => $user,
             'password' => $password,
         ]);
-        $this->checkPageContainsMessage($tester, $contents, 'Login success');
+        $this->checkPageContainsMessage($contents, 'Login success');
         return $contents;
     }
 
-    protected function checkLoginAfterLoginShouldFails(Tester $tester): void
+    protected function checkLoginAfterLoginShouldFails(): void
     {
         $this->logger->test('I am going to login');
-        $contents = $this->checkIfICanLogin($tester);
-        $this->checkIndexPage($tester, $contents);
+        $contents = $this->checkIfICanLogin();
+        $this->checkIndexPage($contents);
 
 
         $this->logger->test('I am going to try login again when I am logged in so that I get an error page.');
 
-        $contents = $tester->post('', [
+        $contents = $this->tester->post('', [
             'email' => AppTest::USER_EMAIL,
             'password' => AppTest::USER_PASSWORD,
         ]);
-        $this->checkErrorPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request is not supported.');
+        $this->checkErrorPage($contents);
+        $this->checkPageContainsError($contents, 'Request is not supported.');
 
 
         $this->logger->test('I am going to Logout.');
 
-        $contents = $tester->get('?q=logout');
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsMessage($tester, $contents, 'Logout success');
+        $contents = $this->tester->get('?q=logout');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsMessage($contents, 'Logout success');
     }
 
-    protected function checkInvalidRegistryShouldFails(Tester $tester): void
+    protected function checkInvalidRegistryShouldFails(): void
     {
         $this->logger->test('I am going to send an empty registration');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => '',
             'email_retype' => '',
             'password' => '',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Email can not be empty');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Email can not be empty');
 
 
         $this->logger->test('I am going to send two different email address');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'email@address.org',
             'email_retype' => 'email@misspelled.org',
             'password' => '',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Email fields are not the same');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Email fields are not the same');
 
 
         $this->logger->test('I am going to send an invalid email address');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'invalid-address.org',
             'email_retype' => 'invalid-address.org',
             'password' => '',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Email address is invalid');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Email address is invalid');
 
 
         $this->logger->test('I am going to send a short password');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'valid@address.org',
             'email_retype' => 'valid@address.org',
             'password' => 'a',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Your Password Must Contain At Least 8 Characters!');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Your Password Must Contain At Least 8 Characters!');
     
 
         $this->logger->test('I am going to send a password without any number');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'valid@address.org',
             'email_retype' => 'valid@address.org',
             'password' => 'asdfghjkl',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Your Password Must Contain At Least 1 Number!');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Your Password Must Contain At Least 1 Number!');
       
 
         $this->logger->test('I am going to send a password without any capital letter');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'valid@address.org',
             'email_retype' => 'valid@address.org',
             'password' => 'asdfghjkl1234',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Your Password Must Contain At Least 1 Capital Letter!');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Your Password Must Contain At Least 1 Capital Letter!');
       
 
         $this->logger->test('I am going to send a password without any Lowercase Letter');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => 'valid@address.org',
             'email_retype' => 'valid@address.org',
             'password' => 'QWERTYU1234',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Your Password Must Contain At Least 1 Lowercase Letter!');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Your Password Must Contain At Least 1 Lowercase Letter!');
 
 
         $this->logger->test('I am going to try to registrate an already exist user');
 
-        $contents = $tester->post('?q=registry', [
+        $contents = $this->tester->post('?q=registry', [
             'email' => AppTest::USER_EMAIL,
             'email_retype' => AppTest::USER_EMAIL,
             'password' => 'ValidPassword123!',
         ]);
-        $this->checkRegistryPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Registration failed');
+        $this->checkRegistryPage($contents);
+        $this->checkPageContainsError($contents, 'Registration failed');
     }
 
-    protected function checkInvalidPasswordResetShouldFails(Tester $tester): void
+    protected function checkInvalidPasswordResetShouldFails(): void
     {
         $this->logger->test('I am going to try to send an empty email to password reset.');
 
-        $contents = $tester->post('?q=pwdreset', [
+        $contents = $this->tester->post('?q=pwdreset', [
             'email' => '',
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsError($contents, 'Request for password reset is failed');
 
 
         $this->logger->test('I am going to try to send an invalid email to password reset.');
 
-        $contents = $tester->post('?q=pwdreset', [
+        $contents = $this->tester->post('?q=pwdreset', [
             'email' => 'invalid-email-address',
         ]);
-        $this->checkLoginPage($tester, $contents);
-        $this->checkPageContainsError($tester, $contents, 'Request for password reset is failed');
+        $this->checkLoginPage($contents);
+        $this->checkPageContainsError($contents, 'Request for password reset is failed');
     }
 
-    protected function checkErrorPage(Tester $tester, string $contents): void
+    protected function checkErrorPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Error page properly.');
 
-        $tester->assertContains('<h1>Error</h1>', $contents);
-        $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '">Back</a>', $contents);
+        $this->tester->assertContains('<h1>Error</h1>', $contents);
+        $this->tester->assertContains('<a href="' . $this->config->get('baseUrl') . '">Back</a>', $contents);
     }
 
-    protected function checkLoginPage(Tester $tester, string $contents): void
+    protected function checkLoginPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Login page properly.');
 
-        $tester->assertContains('<h1>Login</h1>', $contents);
-        $tester->assertContains('<form method="POST" action="?q=">', $contents);
-        $tester->assertContains('<input type="email" name="email"', $contents);
-        $tester->assertContains('<input type="password" name="password"', $contents);
-        $tester->assertContains('<input type="submit" value="Login"', $contents);
-        $tester->assertContains('<a href="?q=registry">Registry</a>', $contents);
-        $tester->assertContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
+        $this->tester->assertContains('<h1>Login</h1>', $contents);
+        $this->tester->assertContains('<form method="POST" action="?q=">', $contents);
+        $this->tester->assertContains('<input type="email" name="email"', $contents);
+        $this->tester->assertContains('<input type="password" name="password"', $contents);
+        $this->tester->assertContains('<input type="submit" value="Login"', $contents);
+        $this->tester->assertContains('<a href="?q=registry">Registry</a>', $contents);
+        $this->tester->assertContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
     }
 
-    protected function checkRegistryPage(Tester $tester, string $contents): void
+    protected function checkRegistryPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Registry page properly.');
 
-        $tester->assertContains('<h1>Registry</h1>', $contents);
-        $tester->assertContains('<input type="email" name="email"', $contents);
-        $tester->assertContains('<input type="email" name="email_retype"', $contents);
-        $tester->assertContains('<input type="password" name="password"', $contents);
-        $tester->assertContains('<input type="submit" value="Register"', $contents);
-        $tester->assertContains('<a href="?q=login">Login</a>', $contents);
-        $tester->assertNotContains('<a href="?q=registry">Registry</a>', $contents);
-        $tester->assertNotContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
+        $this->tester->assertContains('<h1>Registry</h1>', $contents);
+        $this->tester->assertContains('<input type="email" name="email"', $contents);
+        $this->tester->assertContains('<input type="email" name="email_retype"', $contents);
+        $this->tester->assertContains('<input type="password" name="password"', $contents);
+        $this->tester->assertContains('<input type="submit" value="Register"', $contents);
+        $this->tester->assertContains('<a href="?q=login">Login</a>', $contents);
+        $this->tester->assertNotContains('<a href="?q=registry">Registry</a>', $contents);
+        $this->tester->assertNotContains('<a href="?q=pwdreset">Forgotten password</a>', $contents);
     }
 
-    protected function checkPasswordResetPage(Tester $tester, string $contents): void
+    protected function checkPasswordResetPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Password Reset page properly.');
 
-        $tester->assertContains('<h1>Password reset</h1>', $contents);
-        $tester->assertContains('<input type="email" name="email"', $contents);
-        $tester->assertContains('<input type="submit" value="Reset password"', $contents);
+        $this->tester->assertContains('<h1>Password reset</h1>', $contents);
+        $this->tester->assertContains('<input type="email" name="email"', $contents);
+        $this->tester->assertContains('<input type="submit" value="Reset password"', $contents);
     }
 
-    protected function checkIndexPage(Tester $tester, string $contents): void
+    protected function checkIndexPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Index page properly.');
 
-        $tester->assertContains('<h1>Index</h1>', $contents);
-        $tester->assertContains('<a href="?q=logout">Logout</a>', $contents);
+        $this->tester->assertContains('<h1>Index</h1>', $contents);
+        $this->tester->assertContains('<a href="?q=logout">Logout</a>', $contents);
     }
 
-    protected function checkChangePasswordPage(Tester $tester, string $contents): void
+    protected function checkChangePasswordPage(string $contents): void
     {
         $this->logger->test('I am going to check that I can see the Change Password page properly.');
 
-        $tester->assertContains('<h1>Change password</h1>', $contents);
-        $tester->assertContains('<input type="password" name="password"', $contents);
-        $tester->assertContains('<input type="password" name="password_retype"', $contents);
-        $tester->assertContains('<input type="submit" value="Change password"', $contents);
+        $this->tester->assertContains('<h1>Change password</h1>', $contents);
+        $this->tester->assertContains('<input type="password" name="password"', $contents);
+        $this->tester->assertContains('<input type="password" name="password_retype"', $contents);
+        $this->tester->assertContains('<input type="submit" value="Change password"', $contents);
     }
     
-    protected function checkPageContainsMessage(Tester $tester, string $contents, string $message): void
+    protected function checkPageContainsMessage(string $contents, string $message): void
     {
         $this->logger->test('I am going to check that I can see the message "' . $message . '" on the page.');
 
-        $tester->assertContains('<div class="message">' . $message . '</div>', $contents);
+        $this->tester->assertContains('<div class="message">' . $message . '</div>', $contents);
     }
 
-    protected function checkPageContainsError(Tester $tester, string $contents, string $error): void
+    protected function checkPageContainsError(string $contents, string $error): void
     {
         $this->logger->test('I am going to check that I can see the error "' . $error . '" on the page.');
 
-        $tester->assertContains('<div class="message red">' . $error . '</div>', $contents);
+        $this->tester->assertContains('<div class="message red">' . $error . '</div>', $contents);
     }
 
-    protected function checkMail(Tester $tester, string $subject): string
+    protected function checkMail(string $subject): string
     {
         $this->logger->test('I am going to check that I have got an email with subject "' . $subject . '".');
 
         $files = (array)glob($this->config->get('mailerSaveMailsPath') . '/*.*');
-        $tester->assertCount(1, $files);
-        $tester->assertContains(AppTest::USER_EMAIL, (string)($files[0] ?? ''));
-        $tester->assertContains($subject, (string)($files[0] ?? ''));
+        $this->tester->assertCount(1, $files);
+        $this->tester->assertContains(AppTest::USER_EMAIL, (string)($files[0] ?? ''));
+        $this->tester->assertContains($subject, (string)($files[0] ?? ''));
         return (string)($files[0] ?? '') ? (string)file_get_contents((string)($files[0] ?? '')) : '';
     }
 
-    protected function checkRegistrationEmail(Tester $tester, string $email): string
+    protected function checkRegistrationEmail(string $email): string
     {
         $this->logger->test('I am going to check that the Registration email is correct.');
 
-        $tester->assertContains('Thank you for your registration,<br>', $email);
-        $tester->assertContains('please activate your account by click on the following link or copy to your browser address line:<br>', $email);
-        $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
-        $tester->assertContains('">' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
+        $this->tester->assertContains('Thank you for your registration,<br>', $email);
+        $this->tester->assertContains('please activate your account by click on the following link or copy to your browser address line:<br>', $email);
+        $this->tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
+        $this->tester->assertContains('">' . $this->config->get('baseUrl') . '?q=activate&token=', $email);
         $token = explode('">', explode('&token=', $email)[1] ?? '')[0] ?? '';
-        $tester->assertLongerThan(40, $token);
+        $this->tester->assertLongerThan(40, $token);
         return $token;
     }
 
-    protected function checkPasswordResetEmail(Tester $tester, string $email): string
+    protected function checkPasswordResetEmail(string $email): string
     {
         $this->logger->test('I am going to check that the Password Reset email is correct.');
 
-        $tester->assertContains('You asked to reset your password,<br>', $email);
-        $tester->assertContains('you can reset your password by click on the following link or copy to your browser address line:<br>', $email);
-        $tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
-        $tester->assertContains('">' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
-        $tester->assertContains('If you did not asked to reset password please ignore this message.<br>', $email);
+        $this->tester->assertContains('You asked to reset your password,<br>', $email);
+        $this->tester->assertContains('you can reset your password by click on the following link or copy to your browser address line:<br>', $email);
+        $this->tester->assertContains('<a href="' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
+        $this->tester->assertContains('">' . $this->config->get('baseUrl') . '?q=newpassword&token=', $email);
+        $this->tester->assertContains('If you did not asked to reset password please ignore this message.<br>', $email);
 
-        $token = explode('">', explode('&token=', $email)[1])[0];
-        $tester->assertLongerThan(40, $token);
+        $token = explode(
+            '">',
+            explode(
+                '&token=',
+                $email
+            )[1]
+        )[0];
+        $this->tester->assertLongerThan(40, $token);
         return $token;
     }
 }

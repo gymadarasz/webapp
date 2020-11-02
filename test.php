@@ -1,5 +1,6 @@
 <?php declare(strict_types = 1);
 
+use GyMadarasz\WebApp\Service\Invoker;
 use GyMadarasz\WebApp\Service\Logger;
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Mysql;
@@ -22,14 +23,14 @@ error_reporting(E_ALL | E_STRICT);
 //     }
 // );
 
-
-return (new Tester(
+return (new Tester())->test(
+    new Invoker(),
     $config = new Config(),
     $logger = new Logger($config),
-    new Client([
+    $client = new Client([
         'base_uri' => $config->get('baseUrl'), 
         'cookies' => true,
     ]), [
-        new AppTest($config, $logger, new Mysql($config)),
+        AppTest::class, //new AppTest($config, $logger, new Mysql($config)),
     ]
-))->stat();
+)->stat();
