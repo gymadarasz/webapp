@@ -28,6 +28,7 @@ class Mysql
         if ($this->mysqli->connect_error) {
             throw new RuntimeException('MySQL connection error: (' . $this->mysqli->connect_errno . ')' . $this->mysqli->connect_error);
         }
+        $this->connected = true;
     }
 
     public function escape(string $value): string
@@ -37,20 +38,20 @@ class Mysql
     }
 
     /**
-     * @return ?array<mixed>
+     * @return array<string>
      */
-    public function selectOne(string $query): ?array
+    public function selectOne(string $query): array
     {
         $this->connect();
         $result = $this->mysqli->query($query);
         if ($result instanceof mysqli_result) {
-            return $result->fetch_assoc();
+            return $result->fetch_assoc() ?: [];
         }
         throw new RuntimeException("MySQL query error:\n$query\nMessage: {$this->mysqli->error}");
     }
 
     /**
-     * @return array<mixed>
+     * @return array<array<string>>
      */
     public function select(string $query): array
     {
