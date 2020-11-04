@@ -12,7 +12,7 @@ use GyMadarasz\WebApp\Controller\ErrorPage;
 use GyMadarasz\WebApp\Controller\RegistryPagePost;
 use GyMadarasz\WebApp\Controller\PasswordResetPagePost;
 use GyMadarasz\WebApp\Controller\NewPasswordPagePost;
-use GyMadarasz\WebApp\Controller\IndexPage;
+use GyMadarasz\WebApp\Controller\MainPage;
 use GyMadarasz\WebApp\Controller\LogoutPage;
 use RuntimeException;
 
@@ -52,7 +52,7 @@ class RouteSet
         ],
         'protected' => [
             'GET' => [
-                '' => [IndexPage::class, 'viewIndex'],
+                '' => [MainPage::class, 'viewIndex'],
                 'logout' => [LogoutPage::class, 'viewLogout'],
                 '*' => [ErrorPage::class, 'viewError'],
             ],

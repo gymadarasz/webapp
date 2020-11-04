@@ -134,6 +134,11 @@ class Tester
     {
         $ok = $results === $expected;
         if (!$ok) {
+            if (is_string($expected)) {
+                $a1 = explode(' ', $expected);
+                $a2 = explode(' ', $results);
+                $message .= "\nDifferents between given values are:\n" . join(' ', array_diff($a1, $a2)) . "\n";
+            }
             $this->fail($message);
         } else {
             $this->ok();

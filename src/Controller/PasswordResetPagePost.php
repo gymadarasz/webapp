@@ -37,7 +37,9 @@ class PasswordResetPagePost
 
     public function doPasswordReset(): Template
     {
-        $output = $this->template->create('login.html.php');
+        $output = $this->template->create('index.html.php', [
+            'body' => 'login.html.php',
+        ]);
         if ($this->resetPassword($this->globals->getPost('email', ''))) {
             $output->set('message', 'We sent an email to your inbox, please follow the given instructions to change your password');
         } else {

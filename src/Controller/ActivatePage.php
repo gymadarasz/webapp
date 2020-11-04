@@ -12,10 +12,14 @@ class ActivatePage
     public function viewActivate(Config $config, Template $template, User $user, Globals $globals): Template
     {
         if ($user->doActivate($globals->getGet('token'))) {
-            $output = $template->create('login.html.php');
+            $output = $template->create('index.html.php', [
+                'body' => 'login.html.php',
+            ]);
             $output->set('message', 'Your account is now activated.');
         } else {
-            $output = $template->create('error-page.html.php');
+            $output = $template->create('index.html.php', [
+                'body' => 'error-page.html.php',
+            ]);
             $output->set('error', 'Activation token is incorrect.');
             $output->set('base', $config->get('baseUrl'));
         }

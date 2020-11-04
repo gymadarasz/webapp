@@ -52,16 +52,22 @@ class RegistryPagePost
                 $this->globals->getPost('email_retype', ''),
                 $this->globals->getPost('password', '')
             );
-            $output = $this->template->create('login.html.php');
+            $output = $this->template->create('index.html.php', [
+                'body' => 'login.html.php',
+            ]);
             $output->setAsItIs('message', 'Registration success, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
         } catch (UserErrorException $e) {
-            $output = $this->template->create('registry.html.php');
+            $output = $this->template->create('index.html.php', [
+                'body' => 'registry.html.php',
+            ]);
             $output->set('error', $e->getMessage());
             $output->set('email', $this->globals->getPost('email'));
             $output->set('emailRetype', $this->globals->getPost('email_retype'));
         } catch (Exception $e) {
             $this->logger->doLogException($e);
-            $output = $this->template->create('registry.html.php');
+            $output = $this->template->create('index.html.php', [
+                'body' => 'registry.html.php',
+            ]);
             $output->set('error', 'Registration failed');
         }
 

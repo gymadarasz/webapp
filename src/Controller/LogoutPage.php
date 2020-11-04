@@ -10,7 +10,9 @@ class LogoutPage
     public function viewLogout(Template $template, Globals $globals): Template
     {
         $globals->sessionDestroy();
-        $output = $template->create('login.html.php');
+        $output = $template->create('index.html.php', [
+            'body' => 'login.html.php',
+        ]);
         $output->set('message', 'Logout success');
 
         return $output;

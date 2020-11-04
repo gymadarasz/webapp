@@ -1,3 +1,8 @@
-<h1>Index</h1>
-<?php echo isset($this) ? $this->create('messages.html.php', $this->data) : ''; ?>
-<a href="?q=logout">Logout</a>
+<html>
+    <head>
+        <?php echo isset($this) ? $this->create('analytics.html.php', $this->data) : ''; ?>
+    </head>
+    <body>
+        <?php echo isset($this) && isset($body) ? $this->create($body, $this->data) : ''; ?>
+    </body>
+</html>

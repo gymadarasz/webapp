@@ -8,6 +8,8 @@ class RegistryPage
 {
     public function viewRegistry(Template $template): Template
     {
-        return $template->create('registry.html.php');
+        return $template->create('index.html.php', [
+            'body' => 'registry.html.php',
+        ]);
     }
 }
