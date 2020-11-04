@@ -52,8 +52,7 @@ class Tester
 
         try {
             foreach ($tests as $test) {
-                echo $invoker->invoke([$test, 'test'], [$this]);
-                // $test->run($this);
+                echo $invoker->invoke([$test, 'test'], [$this], [$this]);
             }
         } catch (Exception $e) {
             $this->errors[] = '\nException (' . get_class($e) . '): ' . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
