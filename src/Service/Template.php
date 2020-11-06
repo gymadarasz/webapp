@@ -29,20 +29,75 @@ class Template
     }
 
     /**
+     *
+     * @param string $filename
      * @param array<mixed> $data
+     * @return \GyMadarasz\WebApp\Service\Template
+     * @throws RuntimeException
      */
     public function create(string $filename, array $data = []): Template
     {
-        $template = new Template($this->config);
-        $template->filename = $this->config->get('templatesPathExt') . '/' . $filename;
-        if (!file_exists($template->filename)) {
-            $template->filename = $this->config->get('templatesPath') . '/' . $filename;
+        $fullFilename = $this->config->get('templatesPathExt') . '/' . $filename;
+        
+        if (!file_exists($fullFilename)) {
+            $fullFilename = $this->config->get('templatesPath') . '/' . $filename;
         }
+        if (!file_exists($fullFilename)) {
+            throw new RuntimeException('Template file "' . $this->config->get('templatesPathExt') . '/' . $filename . '" not found nor "' . $fullFilename . '".');
+        }
+        
+        $cacheFile = $this->config->get('templatesCachePath') . '/' . $filename;
+        $cacheFileExists = file_exists($cacheFile);
+        $cacheTime = filemtime($cacheFile);
+        
+        if ($cacheFileExists && false === $cacheTime) {
+            throw new RuntimeException('Can not retrieve file modify time for template cache file: ' . $cacheFile);
+        }
+        if (false === ($tplTime = filemtime($fullFilename))) {
+            throw new RuntimeException('Can not retrieve file modify time for template file: ' . $fullFilename);
+        }
+        
+        if (!$cacheFileExists || $tplTime > $cacheTime) {
+            $this->createCache($fullFilename, $cacheFile);
+        }
+        
+        $template = new Template($this->config);
+        $template->filename = $cacheFile;
         if (!file_exists($template->filename)) {
-            throw new RuntimeException('Template file "' . $this->config->get('templatesPathExt') . '/' . $filename . '" not found nor "' . $template->filename . '".');
+            throw new RuntimeException('Template cache file "' . $cacheFile . '".');
         }
         $template->data = $data;
+        
         return $template;
+    }
+    
+    /**
+     *
+     * @param string $fullFilename
+     * @param string $cacheFile
+     * @return void
+     * @throws RuntimeException
+     */
+    private function createCache(string $fullFilename, string $cacheFile): void
+    {
+        $tplContents = file_get_contents($fullFilename);
+        if ($tplContents === false) {
+            throw new RuntimeException('Error reading template file: ' . $fullFilename);
+        }
+        $tplContentsReplacedPhpTagLong = str_replace('{{?php', '<?php ', $tplContents);
+        $tplContentsReplacedPhpTagShort = str_replace('{{?', '<?php ', $tplContentsReplacedPhpTagLong);
+        $tplContentsReplacedPhpEcho = str_replace('{{', '<?php echo ', $tplContentsReplacedPhpTagShort);
+        $tplContentsReplacedPhpClosure = str_replace('}}', '?>', $tplContentsReplacedPhpEcho);
+        
+        $dirname = dirname($cacheFile);
+        if (!is_dir($dirname)) {
+            if (!mkdir($dirname, $this->config->get('templatesCacheMode'), true)) {
+                throw new RuntimeException('Template folder is not created for template file: ' . $cacheFile);
+            }
+        }
+        if (false === file_put_contents($cacheFile, $tplContentsReplacedPhpClosure)) {
+            throw new RuntimeException('Tempplate file is not created: ' . $cacheFile);
+        }
     }
 
     /**

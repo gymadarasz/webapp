@@ -1,4 +1,6 @@
 logs/*.log
 mails/*.html
+src/templates/cache/
 vendor/
 .php_cs.cache
+/nbproject/private/

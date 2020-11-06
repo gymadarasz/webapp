@@ -1,7 +1,7 @@
-<?php if ($error ?? '') { ?>
-<div class="message red"><?php echo $error ?? ''; ?></div>
-<?php } ?>
+{{?php if ($error ?? '') { }}
+<div class="message red">{{ $error ?? ''; }}</div>
+{{?php } }}
 
-<?php if ($message ?? '') { ?>
-<div class="message"><?php echo $message ?? ''; ?></div>
-<?php } ?>
+{{?php if ($message ?? '') { }}
+<div class="message">{{ $message ?? ''; }}</div>
+{{?php } }}

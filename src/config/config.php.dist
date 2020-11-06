@@ -5,6 +5,8 @@ $authSleep = 3;
 
 $templatesPath = __DIR__ . '/../templates';
 $templatesPathExt = __DIR__ . '/../../../webapp/src/templates';
+$templatesCachePath = __DIR__ . '/../templates/cache';
+$templatesCacheMode = 755;
 
 $mysqlHost = 'localhost';
 $mysqlUser = 'user';
