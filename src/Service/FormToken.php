@@ -1,18 +1,49 @@
 <?php declare(strict_types = 1);
 
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Service;
 
+/**
+ * FormToken
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class FormToken
 {
-    private static int $token = 0;
+    protected static int $token = 0;
 
-    private Globals $globals;
+    protected Globals $globals;
 
+    /**
+     * Method __construct
+     *
+     * @param \GyMadarasz\WebApp\Service\Globals $globals globals
+     */
     public function __construct(Globals $globals)
     {
         $this->globals = $globals;
     }
 
+    /**
+     * Method get
+     *
+     * @return string
+     */
     public function get(): string
     {
         if (!self::$token) {
@@ -22,8 +53,14 @@ class FormToken
         return '<input type="hidden" name="token" value="' . self::$token . '">';
     }
 
+    /**
+     * Method check
+     *
+     * @return bool
+     */
     public function check(): bool
     {
-        return $this->globals->getSession('token') == $this->globals->getPost('token');
+        return $this
+            ->globals->getSession('token') == $this->globals->getPost('token');
     }
 }

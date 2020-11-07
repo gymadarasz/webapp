@@ -1,5 +1,16 @@
 <?php declare(strict_types = 1);
 
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Service;
 
 use GyMadarasz\WebApp\Service\Config;
@@ -15,28 +26,47 @@ use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
 
+/**
+ * Template
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class Template
 {
-    private string $filename;
+    protected string $filename;
 
-    private bool $setAsItIs = false;
+    protected bool $setAsItIs = false;
 
     /**
-     * @var array<mixed> $data
+     * Variable data
+     *
+     * @var mixed[] $data
      */
-    private array $data = [];
+    protected array $data = [];
 
-    private Config $config;
+    protected Config $config;
 
+    /**
+     * Method __construct
+     *
+     * @param Config $config config
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
     }
     
     /**
+     * Method create
      *
-     * @param  string       $filename
-     * @param  array<mixed> $data
+     * @param string  $filename filename
+     * @param mixed[] $data     data
+     *
      * @return Template
      * @throws RuntimeException
      */
@@ -55,12 +85,14 @@ class Template
     }
     
     /**
+     * Method getFullname
      *
-     * @param  string $filename
+     * @param string $filename filename
+     *
      * @return string
      * @throws RuntimeException
      */
-    private function getFullname(string $filename): string
+    protected function getFullname(string $filename): string
     {
         $fullFilename = $this->config->get('templatesPathExt') . '/' . $filename;
         
@@ -68,19 +100,24 @@ class Template
             $fullFilename = $this->config->get('templatesPath') . '/' . $filename;
         }
         if (!file_exists($fullFilename)) {
-            throw new RuntimeException('Template file "' . $this->config->get('templatesPathExt') . '/' . $filename . '" not found nor "' . $fullFilename . '".');
+            throw new RuntimeException(
+                'Template file "' . $this->config->get('templatesPathExt') .
+                    '/' . $filename . '" not found nor "' . $fullFilename . '".'
+            );
         }
         
         return $fullFilename;
     }
     
     /**
+     * Method getCacheFile
      *
-     * @param  string $filename
+     * @param string $filename filename
+     *
      * @return string
      * @throws RuntimeException
      */
-    private function getCacheFile(string $filename): string
+    protected function getCacheFile(string $filename): string
     {
         $fullFilename = $this->getFullname($filename);
         $cacheFile = $this->config->get('templatesCachePath') . '/' . $filename;
@@ -88,10 +125,16 @@ class Template
         $cacheTime = filemtime($cacheFile);
         
         if ($cacheFileExists && false === $cacheTime) {
-            throw new RuntimeException('Can not retrieve file modify time for template cache file: ' . $cacheFile);
+            throw new RuntimeException(
+                'Can not retrieve file modify time for template cache file: ' .
+                    $cacheFile
+            );
         }
         if (false === ($tplTime = filemtime($fullFilename))) {
-            throw new RuntimeException('Can not retrieve file modify time for template file: ' . $fullFilename);
+            throw new RuntimeException(
+                'Can not retrieve file modify time for template file: ' .
+                    $fullFilename
+            );
         }
         
         if (!$cacheFileExists || $tplTime > $cacheTime) {
@@ -102,37 +145,68 @@ class Template
     }
     
     /**
+     * Method createCache
      *
-     * @param  string $fullFilename
-     * @param  string $cacheFile
+     * @param string $fullFilename fullFilename
+     * @param string $cacheFile    cacheFile
+     *
      * @return void
      * @throws RuntimeException
      */
-    private function createCache(string $fullFilename, string $cacheFile): void
+    protected function createCache(string $fullFilename, string $cacheFile): void
     {
         $tplContents = file_get_contents($fullFilename);
         if ($tplContents === false) {
-            throw new RuntimeException('Error reading template file: ' . $fullFilename);
+            throw new RuntimeException(
+                'Error reading template file: ' . $fullFilename
+            );
         }
-        $tplContentsReplacedPhpTagLong = str_replace('{{?php', '<?php ', $tplContents);
-        $tplContentsReplacedPhpTagShort = str_replace('{{?', '<?php ', $tplContentsReplacedPhpTagLong);
-        $tplContentsReplacedPhpEcho = str_replace('{{', '<?php echo ', $tplContentsReplacedPhpTagShort);
-        $tplContentsReplacedPhpClosure = str_replace('}}', '?>', $tplContentsReplacedPhpEcho);
-        $tplContentsReplaced = '<?php if (!isset($this) || !($this instanceof ' . self::class . ')) throw new \\RuntimeException("Invalid entry"); ?>' . $tplContentsReplacedPhpClosure;
+        $tplContentsReplacedPhpTagLong = str_replace(
+            '{{?php',
+            '<?php ',
+            $tplContents
+        );
+        $tplContentsReplacedPhpTagShort = str_replace(
+            '{{?',
+            '<?php ',
+            $tplContentsReplacedPhpTagLong
+        );
+        $tplContentsReplacedPhpEcho = str_replace(
+            '{{',
+            '<?php echo ',
+            $tplContentsReplacedPhpTagShort
+        );
+        $tplContentsReplacedPhpClosure = str_replace(
+            '}}',
+            '?>',
+            $tplContentsReplacedPhpEcho
+        );
+        $tplContentsReplaced = '<?php if (!isset($this) || !($this instanceof ' .
+                self::class .
+                ')) throw new \\RuntimeException("Invalid entry"); ?>' .
+                $tplContentsReplacedPhpClosure;
         
         $dirname = dirname($cacheFile);
-        if (!is_dir($dirname) && !mkdir($dirname, $this->config->get('templatesCacheMode'), true)) {
-            throw new RuntimeException('Template folder is not created for template file: ' . $cacheFile);
+        if (!is_dir($dirname)
+            && !mkdir($dirname, $this->config->get('templatesCacheMode'), true)
+        ) {
+            throw new RuntimeException(
+                'Template folder is not created for template file: ' . $cacheFile
+            );
         }
         if (false === file_put_contents($cacheFile, $tplContentsReplaced)) {
-            throw new RuntimeException('Tempplate file is not created: ' . $cacheFile);
+            throw new RuntimeException(
+                'Tempplate file is not created: ' . $cacheFile
+            );
         }
     }
     
     /**
+     * Method set
      *
-     * @param  string $name
-     * @param  mixed  $value
+     * @param string $name  name
+     * @param mixed  $value value
+     *
      * @return void
      */
     public function set(string $name, $value): void
@@ -140,7 +214,12 @@ class Template
         $this->data[$name] = $this->setAsItIs ? $value : $this->encode($value);
     }
 
-    public function __toString()
+    /**
+     * Method __toString
+     *
+     * @return string
+     */
+    public function __toString(): string
     {
         ob_start();
         foreach ($this->data as $_key => $_value) {
@@ -153,9 +232,11 @@ class Template
     }
 
     /**
+     * Method setAsItIs
      *
-     * @param  string $name
-     * @param  mixed  $value
+     * @param string $name  name
+     * @param mixed  $value value
+     *
      * @return void
      */
     public function setAsItIs(string $name, $value): void
@@ -166,11 +247,13 @@ class Template
     }
     
     /**
+     * Method encode
      *
-     * @param  mixed $value
+     * @param mixed $value value
+     *
      * @return mixed
      */
-    private function encode($value)
+    protected function encode($value)
     {
         if (is_array($value)) {
             $ret = [];

@@ -1,5 +1,16 @@
 <?php declare(strict_types = 1);
 
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Controller
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Controller;
 
 use GyMadarasz\WebApp\UserErrorException;
@@ -8,13 +19,31 @@ use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\Mailer;
 
+/**
+ * ResendPage
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Controller
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class ResendPage
 {
-    private Template $template;
-    private Config $config;
-    private Globals $globals;
-    private Mailer $mailer;
+    protected Template $template;
+    protected Config $config;
+    protected Globals $globals;
+    protected Mailer $mailer;
 
+    /**
+     * Method __construct
+     *
+     * @param Template $template template
+     * @param Config   $config   config
+     * @param Globals  $globals  globals
+     * @param Mailer   $mailer   mailer
+     */
     public function __construct(
         Template $template,
         Config $config,
@@ -27,6 +56,12 @@ class ResendPage
         $this->mailer = $mailer;
     }
 
+    /**
+     * Method viewResend
+     *
+     * @return Template
+     * @throws UserErrorException
+     */
     public function viewResend(): Template
     {
         $output = $this->template->create(
@@ -35,7 +70,12 @@ class ResendPage
             'body' => 'login.html.php',
             ]
         );
-        $output->setAsItIs('message', 'Attempt to resend activation email, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
+        $output->setAsItIs(
+            'message',
+            'Attempt to resend activation email, '
+                . 'please check your email inbox and validate your account, '
+                . 'or try to resend by <a href="?q=resend">click here</a>'
+        );
 
         $resend = $this->globals->getSession('resend');
         $email = $resend['email'];
@@ -47,10 +87,25 @@ class ResendPage
         return $output;
     }
 
-    private function sendActivationEmail(string $email, string $token): bool
+    /**
+     * Method sendActivationEmail
+     *
+     * @param string $email email
+     * @param string $token token
+     *
+     * @return bool
+     */
+    protected function sendActivationEmail(string $email, string $token): bool
     {
         $message = $this->template->create('emails/activation.html.php');
-        $message->setAsItIs('link', $this->config->get('baseUrl') . "?q=activate&token=$token");
-        return $this->mailer->send($email, 'Activate your account', (string)$message);
+        $message->setAsItIs(
+            'link',
+            $this->config->get('baseUrl') . "?q=activate&token=$token"
+        );
+        return $this->mailer->send(
+            $email,
+            'Activate your account',
+            (string)$message
+        );
     }
 }

@@ -1,9 +1,37 @@
 <?php declare(strict_types = 1);
 
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Service;
 
+/**
+ * PasswordValidator
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class PasswordValidator
 {
+    /**
+     * Method getPasswordError
+     *
+     * @param string $password password
+     *
+     * @return string
+     */
     public function getPasswordError(string $password): string
     {
         $passwordErr = '';

@@ -1,5 +1,16 @@
 <?php declare(strict_types = 1);
 
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Controller
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Controller;
 
 use GyMadarasz\WebApp\UserErrorException;
@@ -8,10 +19,32 @@ use GyMadarasz\WebApp\Service\User;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\PasswordValidator;
 
+/**
+ * NewPasswordPage
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Controller
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class NewPasswordPage
 {
-    public function viewNewPassword(Template $template, User $user, Globals $globals): Template
-    {
+    /**
+     * Method viewNewPassword
+     *
+     * @param Template $template template
+     * @param User     $user     user
+     * @param Globals  $globals  globals
+     *
+     * @return Template
+     */
+    public function viewNewPassword(
+        Template $template,
+        User $user,
+        Globals $globals
+    ): Template {
         $token = $globals->getGet('token');
         if (!$user->doAuthByToken($token)) {
             $output = $template->create(
@@ -32,6 +65,18 @@ class NewPasswordPage
     }
 
     // TODO needs more negative tests for new password posting
+    
+    /**
+     * Method doNewPassword
+     *
+     * @param Template          $template          template
+     * @param User              $user              user
+     * @param Globals           $globals           globals
+     * @param PasswordValidator $passwordValidator passwordValidator
+     *
+     * @return Template
+     * @throws UserErrorException
+     */
     public function doNewPassword(
         Template $template,
         User $user,
