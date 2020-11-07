@@ -112,7 +112,12 @@ class AppTest
         $this->cleanup();
 
         // ------- tests ----------
-        $this->checkRegistryLoginAndPasswordResetProcess();
+        $this->checkIncorrectLogin();
+        $this->checkRegistryPageWorks();
+        $this->checkActivationEmailResend();
+        $this->checkLoginLogoutWorks();
+        $this->checkPasswordResetWorks();
+        $this->checkErrorPageWorks();
         $this->checkLoginAfterLoginShouldFails();
         $this->checkInvalidRegistryShouldFails();
         $this->checkInvalidPasswordResetShouldFails();
@@ -120,13 +125,8 @@ class AppTest
         // ----- clean up -----
         //$this->cleanup();
     }
-
-    /**
-     * Method checkRegistryLoginAndPasswordResetProcess
-     *
-     * @return void
-     */
-    protected function checkRegistryLoginAndPasswordResetProcess(): void
+    
+    protected function checkIncorrectLogin(): void
     {
         $this->logger->test('I am going to the Login page.');
 
@@ -148,8 +148,10 @@ class AppTest
         );
         $this->checkLoginPage($contents);
         $this->checkPageContainsError($contents, 'Login failed');
+    }
 
-
+    protected function checkRegistryPageWorks(): void
+    {
         $this->logger->test('I am going to Register page.');
 
         $contents = $this->tester->get('?q=registry');
@@ -175,8 +177,10 @@ class AppTest
                 . 'please check your email inbox and validate your account, '
                 . 'or try to resend by <a href="?q=resend">click here</a>'
         );
-
-
+    }
+    
+    protected function checkActivationEmailResend(): void
+    {
         $this->logger->test('I am going to check my activation email.');
 
         $email = $this->checkMail('Activate your account');
@@ -255,8 +259,10 @@ class AppTest
             1,
             (int)((array)$results)['active']
         );
-
-
+    }
+    
+    protected function checkLoginLogoutWorks(): void
+    {
         $this->logger->test(
             'I am going to post my newly registered account details.'
         );
@@ -278,8 +284,10 @@ class AppTest
         $contents = $this->tester->get('?q=logout');
         $this->checkLoginPage($contents);
         $this->checkPageContainsMessage($contents, 'Logout success');
-
-
+    }
+    
+    protected function checkPasswordResetWorks(): void
+    {
         $this->logger->test('I am going to reset my password.');
 
         $contents = $this->tester->get('?q=pwdreset');
@@ -352,8 +360,10 @@ class AppTest
             $contents,
             'Your password changed, please log in'
         );
-
-
+    }
+    
+    protected function checkErrorPageWorks(): void
+    {
         $this->logger->test('I am going to login with my new password');
         $contents = $this->checkIfICanLogin();
         $this->checkMainPage($contents);
