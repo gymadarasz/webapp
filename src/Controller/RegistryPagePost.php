@@ -151,7 +151,8 @@ class RegistryPagePost
         if (!$this->emailValidator->isValidEmail($email)) {
             throw new UserErrorException('Email address is invalid');
         }
-        if ($passwordError = $this->passwordValidator->getPasswordError($password)) {
+        $passwordError = $this->passwordValidator->getPasswordError($password);
+        if ($passwordError) {
             throw new UserErrorException($passwordError);
         }
         $token = $this->user->createUser($email, $password);

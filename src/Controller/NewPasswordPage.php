@@ -93,7 +93,8 @@ class NewPasswordPage
         if ($password != $passwordRetype) {
             $error = 'Two password are not identical';
         }
-        if ($passwordError = $passwordValidator->getPasswordError($password)) {
+        $passwordError = $passwordValidator->getPasswordError($password);
+        if ($passwordError) {
             $error = $passwordError;
         }
         if (!$error && $user->changePassword($password)) {
@@ -104,15 +105,15 @@ class NewPasswordPage
                 ]
             );
             $output->set('message', 'Your password changed, please log in');
-        } else {
-            $output = $template->create(
-                'index.html',
-                [
+            return $output;
+        }
+        $output = $template->create(
+            'index.html',
+            [
                 'body' => 'pwdchange.html',
                 ]
-            );
-            $output->set('error', $error);
-        }
+        );
+        $output->set('error', $error);
         return $output;
     }
 }

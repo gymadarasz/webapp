@@ -47,11 +47,9 @@ class Router
             $globals = new Globals();
         }
         $globals->sessionStart();
-        if ($globals->getSession('user', false)) {
-            $routes = $routes['protected'] ?? $routes['*'];
-        } else {
+        $routes = $globals->getSession('user', false) ?
+            $routes = $routes['protected'] ?? $routes['*'] :
             $routes = $routes['public'] ?? $routes['*'];
-        }
         $routesPerMethod = $routes[$globals->getMethod()] ?? $routes['*'];
         $routesPerQuery = $routesPerMethod[$globals->getGet('q', '')] ??
                 $routesPerMethod['*'];

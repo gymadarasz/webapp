@@ -72,16 +72,15 @@ class LoginPage
                 ]
             );
             $output->set('message', 'Login success');
-        } else {
-            $output = $template->create(
-                'index.html',
-                [
+            return $output;
+        }
+        $output = $template->create(
+            'index.html',
+            [
                 'body' => 'login.html',
                 ]
-            );
-            $output->set('error', 'Login failed');
-        }
-
+        );
+        $output->set('error', 'Login failed');
         return $output;
     }
 }

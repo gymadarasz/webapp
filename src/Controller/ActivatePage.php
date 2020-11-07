@@ -54,17 +54,16 @@ class ActivatePage
                 ]
             );
             $output->set('message', 'Your account is now activated.');
-        } else {
-            $output = $template->create(
-                'index.html',
-                [
+            return $output;
+        }
+        $output = $template->create(
+            'index.html',
+            [
                 'body' => 'error-page.html',
                 ]
-            );
-            $output->set('error', 'Activation token is incorrect.');
-            $output->set('base', $config->get('baseUrl'));
-        }
-
+        );
+        $output->set('error', 'Activation token is incorrect.');
+        $output->set('base', $config->get('baseUrl'));
         return $output;
     }
 }

@@ -85,10 +85,9 @@ class PasswordResetPagePost
                 'We sent an email to your inbox, '
                     . 'please follow the given instructions to change your password'
             );
-        } else {
-            $output->set('error', 'Request for password reset is failed');
+            return $output;
         }
-
+        $output->set('error', 'Request for password reset is failed');
         return $output;
     }
 

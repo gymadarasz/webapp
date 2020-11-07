@@ -23,7 +23,7 @@ error_reporting(E_ALL | E_STRICT);
 //     }
 // );
 
-return (new Tester())->test(
+$errors = (new Tester())->test(
     new Invoker(),
     $config = new Config(),
     $logger = new Logger($config),
@@ -36,3 +36,5 @@ return (new Tester())->test(
         AppTest::class, //new AppTest($config, $logger, new Mysql($config)),
     ]
 )->stat();
+
+exit($errors ? 1 : 0);
