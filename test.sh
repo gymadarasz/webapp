@@ -2,10 +2,14 @@ rm -rf src/templates/cache/
 
 vendor/bin/php-cs-fixer fix src
 vendor/bin/php-cs-fixer fix tests
+
+php ./csfix.php src
 vendor/bin/phpcs src --ignore=*/config/*
 vendor/bin/phpcs tests
+
 vendor/bin/phpcbf src
 vendor/bin/phpcbf tests
+
 vendor/bin/phpstan analyse --level 8 src
 vendor/bin/phpstan analyse --level 8 tests
 
