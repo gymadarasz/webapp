@@ -57,7 +57,7 @@ class Router
                 $routesPerMethod['*'];
         
         $results = $invoker->invoke($routesPerQuery);
-        // $results = $ctrlr->{$routes[1]}();
+        
         if (is_array($results)
             || (is_object($results) && !method_exists($results, '__toString'))
         ) {
