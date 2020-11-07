@@ -8,8 +8,11 @@ class MainPage
 {
     public function viewIndex(Template $template): Template
     {
-        return $template->create('index.html.php', [
+        return $template->create(
+            'index.html.php',
+            [
             'body' => 'main.html.php',
-        ]);
+            ]
+        );
     }
 }

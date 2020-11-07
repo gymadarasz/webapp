@@ -29,9 +29,12 @@ class ResendPage
 
     public function viewResend(): Template
     {
-        $output = $this->template->create('index.html.php', [
+        $output = $this->template->create(
+            'index.html.php',
+            [
             'body' => 'login.html.php',
-        ]);
+            ]
+        );
         $output->setAsItIs('message', 'Attempt to resend activation email, please check your email inbox and validate your account, or try to resend by <a href="?q=resend">click here</a>');
 
         $resend = $this->globals->getSession('resend');

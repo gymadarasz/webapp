@@ -9,9 +9,12 @@ class ErrorPage
 {
     public function viewError(Config $config, Template $template): Template
     {
-        $output = $template->create('index.html.php', [
+        $output = $template->create(
+            'index.html.php',
+            [
             'body' => 'error-page.html.php',
-        ]);
+            ]
+        );
         $output->set('error', 'Request is not supported.');
         $output->set('base', $config->get('baseUrl'));
         return $output;

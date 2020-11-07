@@ -1,5 +1,18 @@
 <?php declare(strict_types = 1);
 
+/**
+ * Mysql
+ *
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Service;
 
 use RuntimeException;
@@ -7,30 +20,66 @@ use mysqli;
 use mysqli_result;
 use GyMadarasz\WebApp\Service\Config;
 
+/**
+ * Mysql
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class Mysql
 {
-    private mysqli $mysqli;
-    private bool $connected = false;
+    protected mysqli $mysqli;
+    protected bool $connected = false;
 
-    private Config $config;
+    protected Config $config;
 
+    /**
+     * Method __construct
+     *
+     * @param Config $config config
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * Method connect
+     *
+     * @return void
+     * @throws RuntimeException
+     */
     public function connect(): void
     {
         if ($this->connected) {
             return;
         }
-        $this->mysqli = new mysqli($this->config->get('mysqlHost'), $this->config->get('mysqlUser'), $this->config->get('mysqlPassword'), $this->config->get('mysqlDatabase'));
+        $this->mysqli = new mysqli(
+            $this->config->get('mysqlHost'),
+            $this->config->get('mysqlUser'),
+            $this->config->get('mysqlPassword'),
+            $this->config->get('mysqlDatabase')
+        );
         if ($this->mysqli->connect_error) {
-            throw new RuntimeException('MySQL connection error: (' . $this->mysqli->connect_errno . ')' . $this->mysqli->connect_error);
+            throw new RuntimeException(
+                'MySQL connection error: (' . $this->mysqli->connect_errno . ')' .
+                    $this->mysqli->connect_error
+            );
         }
         $this->connected = true;
     }
 
+    /**
+     * Method escape
+     *
+     * @param string $value value
+     *
+     * @return string
+     */
     public function escape(string $value): string
     {
         $this->connect();
@@ -38,7 +87,12 @@ class Mysql
     }
 
     /**
-     * @return array<string>
+     * Method selectOne
+     *
+     * @param string $query query
+     *
+     * @return string[]
+     * @throws RuntimeException
      */
     public function selectOne(string $query): array
     {
@@ -47,11 +101,18 @@ class Mysql
         if ($result instanceof mysqli_result) {
             return $result->fetch_assoc() ?: [];
         }
-        throw new RuntimeException("MySQL query error:\n$query\nMessage: {$this->mysqli->error}");
+        throw new RuntimeException(
+            "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
+        );
     }
 
     /**
-     * @return array<array<string>>
+     * Method select
+     *
+     * @param string $query query
+     *
+     * @return string[][]
+     * @throws RuntimeException
      */
     public function select(string $query): array
     {
@@ -64,18 +125,37 @@ class Mysql
             }
             return $rows;
         }
-        throw new RuntimeException("MySQL query error:\n$query\nMessage: {$this->mysqli->error}");
+        throw new RuntimeException(
+            "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
+        );
     }
 
+    /**
+     * Method query
+     *
+     * @param string $query query
+     *
+     * @return bool
+     * @throws RuntimeException
+     */
     public function query(string $query): bool
     {
         $this->connect();
         if ($ret = (bool)$this->mysqli->query($query)) {
             return $ret;
         }
-        throw new RuntimeException("MySQL query error:\n$query\nMessage: {$this->mysqli->error}");
+        throw new RuntimeException(
+            "MySQL query error:\n$query\nMessage: {$this->mysqli->error}"
+        );
     }
 
+    /**
+     * Method update
+     *
+     * @param string $query query
+     *
+     * @return int
+     */
     public function update(string $query): int
     {
         if (!$this->query($query)) {
@@ -84,6 +164,13 @@ class Mysql
         return $this->mysqli->affected_rows;
     }
 
+    /**
+     * Method insert
+     *
+     * @param string $query query
+     *
+     * @return int
+     */
     public function insert(string $query): int
     {
         if (!$this->query($query)) {

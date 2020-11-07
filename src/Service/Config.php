@@ -12,7 +12,9 @@ class Config
     const CONFIG_PATH = __DIR__ . '/../config';
     const ENV_FILE = __DIR__ . '/../config/env.php';
 
-    /** @var ?array<mixed> */
+    /**
+     * @var ?array<mixed>
+     */
     private static ?array $data = null;
 
     private static string $extPath = Config::CONFIG_PATH;

@@ -1,5 +1,18 @@
 <?php declare(strict_types = 1);
 
+/**
+ * RouteSet
+ *
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp\Service;
 
 use GyMadarasz\WebApp\Controller\LoginPage;
@@ -16,6 +29,16 @@ use GyMadarasz\WebApp\Controller\MainPage;
 use GyMadarasz\WebApp\Controller\LogoutPage;
 use RuntimeException;
 
+/**
+ * RouteSet
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp\Service
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class RouteSet
 {
     const NO_ROUTES = [
@@ -70,11 +93,18 @@ class RouteSet
         ],
     ];
 
-    /** @var array<mixed> */
-    private $routes = [];
+    /**
+     * Variable routes
+     *
+     * @var mixed[]
+     */
+    protected $routes = [];
 
     /**
-     * @param array<mixed> $routes
+     * Method apply
+     *
+     * @param mixed[] $routes routes
+     *
      * @return RouteSet
      */
     public function apply(array $routes): self
@@ -84,7 +114,9 @@ class RouteSet
     }
 
     /**
-     * @return array<mixed>
+     * Method getRoutes
+     *
+     * @return mixed[]
      */
     public function getRoutes(): array
     {
@@ -92,16 +124,21 @@ class RouteSet
     }
 
     /**
-     * @param array<mixed> $array1
-     * @param array<mixed> $array2
-     * @return array<mixed>
+     * Method merge
+     *
+     * @param mixed[] $array1 array1
+     * @param mixed[] $array2 array2
+     *
+     * @return mixed[]
      */
-    private function merge(array $array1, array $array2): array
+    protected function merge(array $array1, array $array2): array
     {
         $merged = $array1;
 
         foreach ($array2 as $key => & $value) {
-            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+            if (is_array($value)
+                && isset($merged[$key]) && is_array($merged[$key])
+            ) {
                 $merged[$key] = $this->merge($merged[$key], $value);
             } else {
                 $merged[$key] = $value;
@@ -111,6 +148,12 @@ class RouteSet
         return $merged;
     }
 
+    /**
+     * Method noRoute
+     *
+     * @return void
+     * @throws RuntimeException
+     */
     public function noRoute(): void
     {
         throw new RuntimeException('No route defined');

@@ -8,8 +8,11 @@ class PasswordResetPage
 {
     public function viewPasswordReset(Template $template): Template
     {
-        return $template->create('index.html.php', [
+        return $template->create(
+            'index.html.php',
+            [
             'body' => 'pwdreset.html.php',
-        ]);
+            ]
+        );
     }
 }

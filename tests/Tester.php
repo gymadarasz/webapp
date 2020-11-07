@@ -1,37 +1,77 @@
 <?php declare(strict_types = 1);
 
+/**
+ * Tester
+ *
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\Test;
 
-use function xdebug_start_code_coverage;
-use function strpos;
-use function strlen;
-use function implode;
-use function count;
 use Exception;
-use RuntimeException;
-use GyMadarasz\WebApp\Service\Invoker;
-use GyMadarasz\WebApp\Service\Config;
-use GyMadarasz\WebApp\Service\Logger;
 use GuzzleHttp\Client;
+use GyMadarasz\WebApp\Service\Config;
+use GyMadarasz\WebApp\Service\Invoker;
+use GyMadarasz\WebApp\Service\Logger;
+use RuntimeException;
+use function count;
+use function implode;
+use function strlen;
+use function strpos;
 
 // TODO add coverage stat
 
+/**
+ * Tester
+ *
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class Tester
 {
-    private Config $config;
-    private Logger $logger;
-    private Client $client;
-
-    /** @var array<string> */
-    private array $errors;
-
-    private int $passes;
+    protected Config $config;
+    protected Logger $logger;
+    protected Client $client;
 
     /**
-     * @param array<string> $tests
+     * Variable errors
+     *
+     * @var string[]
      */
-    public function test(Invoker $invoker, Config $config, Logger $logger, Client $client, array $tests): self
-    {
+    protected array $errors;
+
+    protected int $passes;
+
+    /**
+     * Method test
+     *
+     * @param Invoker  $invoker invoker
+     * @param Config   $config  config
+     * @param Logger   $logger  logger
+     * @param Client   $client  client
+     * @param string[] $tests   test
+     *
+     * @return Tester
+     * @throws RuntimeException
+     */
+    public function test(
+        Invoker $invoker,
+        Config $config,
+        Logger $logger,
+        Client $client,
+        array $tests
+    ): self {
         if (php_sapi_name() !== 'cli') {
             throw new RuntimeException('Test can run only from command line.');
         }
@@ -41,7 +81,10 @@ class Tester
 
         $env = $this->config->getEnv();
         if ($env !== 'test') {
-            $this->logger->warning('Environment should equals to "test". Currently it is "' . $env . '" but changed to "test".');
+            $this->logger->warning(
+                'Environment should equals to "test". Currently it is "' . $env .
+                    '" but changed to "test".'
+            );
             $this->config->setEnv('test');
         }
 
@@ -55,36 +98,73 @@ class Tester
                 echo $invoker->invoke([$test, 'test'], [$this], [$this]);
             }
         } catch (Exception $e) {
-            $this->errors[] = '\nException (' . get_class($e) . '): ' . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
+            $this->errors[] = '\nException (' . get_class($e) . '): ' .
+                    $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString();
             $this->logger->doLogException($e);
         }
 
         if ($env !== 'test') {
-            $this->logger->info("Reverting back the environment to: '$env'");
+            $this->logger->info(
+                "Reverting back the environment to: '$env'"
+            );
             $this->config->setEnv($env);
-            $this->logger->info("Environment is '" . $this->config->getEnv() . "' now.");
+            $this->logger->info(
+                "Environment is '" . $this->config->getEnv() . "' now."
+            );
         } else {
-            $this->logger->info("Environment is '" . $this->config->getEnv() . "' don't forget to revert it back in your " . Config::ENV_FILE);
+            $this->logger->info(
+                "Environment is '" . $this->config->getEnv() .
+                    "' don't forget to revert it back in your " . Config::ENV_FILE
+            );
         }
 
         return $this;
     }
 
+    /**
+     * Method get
+     *
+     * @param string $url URL
+     *
+     * @return string
+     */
     public function get(string $url): string
     {
         return $this->client->get($url)->getBody()->getContents();
     }
 
     /**
-     * @param array<mixed> $data
+     * Method post
+     *
+     * @param string  $url  URL
+     * @param mixed[] $data Data
+     *
+     * @return string
      */
     public function post(string $url, array $data): string
     {
-        return $this->client->post($url, ['form_params' => $data])->getBody()->getContents();
+        return $this->client->post(
+            $url,
+            [
+            'form_params' => $data
+            ]
+        )->getBody()->getContents();
     }
 
-    public function assertContains(string $expected, string $results, string $message = 'Results should contains the expected string.'): void
-    {
+    /**
+     * Method assertContains
+     *
+     * @param string $expected Expected
+     * @param string $results  Results
+     * @param string $message  Message
+     *
+     * @return void
+     */
+    public function assertContains(
+        string $expected,
+        string $results,
+        string $message = 'Results should contains the expected string.'
+    ): void {
         $ok = strpos($results, $expected) !== false;
         if (!$ok) {
             $this->fail($message);
@@ -93,8 +173,20 @@ class Tester
         }
     }
 
-    public function assertNotContains(string $expected, string $results, string $message = 'Results should not contains the expected string.'): void
-    {
+    /**
+     * Method assertNotContains
+     *
+     * @param string $expected Expected
+     * @param string $results  Results
+     * @param string $message  Message
+     *
+     * @return void
+     */
+    public function assertNotContains(
+        string $expected,
+        string $results,
+        string $message = 'Results should not contains the expected string.'
+    ): void {
         $ok = strpos($results, $expected) === false;
         if (!$ok) {
             $this->fail($message);
@@ -104,10 +196,19 @@ class Tester
     }
 
     /**
-     * @param array<mixed> $results
+     * Method assertCount
+     *
+     * @param int     $expected Expected
+     * @param mixed[] $results  Results
+     * @param string  $message  Message
+     *
+     * @return void
      */
-    public function assertCount(int $expected, array $results, string $message = 'Results array should has expected count.'): void
-    {
+    public function assertCount(
+        int $expected,
+        array $results,
+        string $message = 'Results array should has expected count.'
+    ): void {
         $ok = count($results) === $expected;
         if (!$ok) {
             $this->fail($message);
@@ -116,8 +217,20 @@ class Tester
         }
     }
 
-    public function assertLongerThan(int $expected, string $results, string $message = 'Results string should not long enough as expected.'): void
-    {
+    /**
+     * Method assertLongerThan
+     *
+     * @param int    $expected Expected
+     * @param string $results  Results
+     * @param string $message  Message
+     *
+     * @return void
+     */
+    public function assertLongerThan(
+        int $expected,
+        string $results,
+        string $message = 'Results string should not long enough as expected.'
+    ): void {
         $ok = strlen($results) > $expected;
         if (!$ok) {
             $this->fail($message);
@@ -127,17 +240,26 @@ class Tester
     }
 
     /**
-     * @param mixed $expected
-     * @param mixed $results
+     * Method assertEquals
+     *
+     * @param mixed  $expected Expected
+     * @param mixed  $results  Results
+     * @param string $message  Message
+     *
+     * @return void
      */
-    public function assertEquals($expected, $results, string $message = 'Results should equals to expected (type strict).'): void
-    {
+    public function assertEquals(
+        $expected,
+        $results,
+        string $message = 'Results should equals to expected (type strict).'
+    ): void {
         $ok = $results === $expected;
         if (!$ok) {
             if (is_string($expected)) {
                 $a1 = explode(' ', $expected);
                 $a2 = explode(' ', $results);
-                $message .= "\nDifferents between given values are:\n" . join(' ', array_diff($a1, $a2)) . "\n";
+                $message .= "\nDifferents between given values are:\n" .
+                        join(' ', array_diff($a1, $a2)) . "\n";
             }
             $this->fail($message);
         } else {
@@ -146,11 +268,19 @@ class Tester
     }
 
     /**
-     * @param mixed $expected
-     * @param mixed $results
+     * Method assertNotEquals
+     *
+     * @param mixed  $expected Expected
+     * @param mixed  $results  Results
+     * @param string $message  Message
+     *
+     * @return void
      */
-    public function assertNotEquals($expected, $results, string $message = 'Results should equals to expected (type strict).'): void
-    {
+    public function assertNotEquals(
+        $expected,
+        $results,
+        string $message = 'Results should equals to expected (type strict).'
+    ): void {
         $ok = $results !== $expected;
         if (!$ok) {
             $this->fail($message);
@@ -159,8 +289,18 @@ class Tester
         }
     }
 
-    public function assertTrue(bool $results, string $message = 'Results should be true.'): void
-    {
+    /**
+     * Method assertTrue
+     *
+     * @param bool   $results Results
+     * @param string $message Message
+     *
+     * @return void
+     */
+    public function assertTrue(
+        bool $results,
+        string $message = 'Results should be true.'
+    ): void {
         $ok = $results === true;
         if (!$ok) {
             $this->fail($message);
@@ -169,6 +309,11 @@ class Tester
         }
     }
 
+    /**
+     * Method stat
+     *
+     * @return int
+     */
     public function stat(): int
     {
         echo "\nSuccess: " . $this->passes;
@@ -182,20 +327,32 @@ class Tester
         return count($this->errors);
     }
 
-    private function fail(string $message): void
+    /**
+     * Method fail
+     *
+     * @param string $message Message
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function fail(string $message): void
     {
         $this->logger->fail('Test failed: ' . $message);
         try {
             throw new Exception();
         } catch (Exception $e) {
         }
-        $this->errors[] =
-            "\nTest failed: " . $message .
+        $this->errors[] = "\nTest failed: " . $message .
             "\nTrace:\n" . $e->getTraceAsString();
         echo 'X';
     }
 
-    private function ok(): void
+    /**
+     * Method ok
+     *
+     * @return void
+     */
+    protected function ok(): void
     {
         $this->passes++;
         echo ".";
@@ -203,30 +360,70 @@ class Tester
 
 
     /**
-     * @return array<mixed>
+     * Method getInputFieldValue
+     *
+     * @param string $type     Type
+     * @param string $name     Name
+     * @param string $contents Contents
+     *
+     * @return mixed[]
+     * @throws RuntimeException
      */
-    public function getInputFieldValue(string $type, string $name, string $contents): array
-    {
-        if (!preg_match_all('/<input\s+type\s*=\s*"' . $type . '"\s*name\s*=\s*"' . preg_quote($name) . '"\s*value=\s*"([^"]*)"/', $contents, $matches)) {
-            throw new RuntimeException('Input element not found:  <input type="' . $type . '" name="' . $name . '" value=...>');
+    public function getInputFieldValue(
+        string $type,
+        string $name,
+        string $contents
+    ): array {
+        if (!preg_match_all(
+            '/<input\s+type\s*=\s*"' . $type .
+                '"\s*name\s*=\s*"' . preg_quote($name) .
+            '"\s*value=\s*"([^"]*)"/',
+            $contents,
+            $matches
+        )
+        ) {
+            throw new RuntimeException(
+                'Input element not found:  <input type="' .
+                $type . '" name="' . $name . '" value=...>'
+            );
         }
         if (!isset($matches[1]) || !isset($matches[1][0])) {
-            throw new RuntimeException('Input element does not have a value: <input type="' . $type . '" name="' . $name . '" value=...>');
+            throw new RuntimeException(
+                'Input element does not have a value: <input type="' .
+                    $type . '" name="' . $name . '" value=...>'
+            );
         }
         return $matches[1];
     }
-    /** @return array<string> */
+    
+    /**
+     * Method getLinks
+     *
+     * @param string $hrefStarts HrefStarts
+     * @param string $contents   Contents
+     *
+     * @return string[]
+     */
     public function getLinks(string $hrefStarts, string $contents): array
     {
-        if (!preg_match_all('/<a href="(' . preg_quote($hrefStarts) . '[^"]*)"/', $contents, $matches)) {
+        if (!preg_match_all(
+            '/<a href="(' . preg_quote($hrefStarts) . '[^"]*)"/',
+            $contents,
+            $matches
+        )
+        ) {
             return [];
         }
         return $matches[1];
     }
 
-
     /**
-     * @return array<array<string>>
+     * Method getSelectsValues
+     *
+     * @param string $name     Name
+     * @param string $contents Contents
+     *
+     * @return string[][]
      */
     public function getSelectsValues(string $name, string $contents): array
     {
@@ -244,18 +441,29 @@ class Tester
     }
 
     /**
+     * Method getOptionValue
+     *
+     * @param string $option Option
+     *
      * @return string
+     * @throws RuntimeException
      */
     public function getOptionValue(string $option): string
     {
-        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)) {
-            throw new RuntimeException('Unrecognised value in option: ' . $option); // TODO check inner text??
+        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)
+        ) {
+            // TODO check inner text??
+            throw new RuntimeException('Unrecognised value in option: ' . $option);
         }
         return $matches[1];
     }
 
     /**
-     * @return array<string>
+     * Method getSelectOptions
+     *
+     * @param string $select Select
+     *
+     * @return string[]
      */
     public function getSelectOptions(string $select): array
     {
@@ -267,7 +475,13 @@ class Tester
 
 
     /**
-     * @return array<string>
+     * Method getSelectFieldValue
+     *
+     * @param string $name     Name
+     * @param string $contents Contents
+     *
+     * @return string[]
+     * @throws RuntimeException
      */
     public function getSelectFieldValue(string $name, string $contents): array
     {
@@ -293,32 +507,63 @@ class Tester
                     $values[] = $value;
                 }
             } else {
-                throw new RuntimeException('A select element has not any option: ' . explode('\n', $select)[0] . '...');
+                throw new RuntimeException(
+                    'A select element has not any option: ' .
+                    explode('\n', $select)[0] . '...'
+                );
             }
         }
         return $values;
     }
 
+    /**
+     * Method getOptionFieldValue
+     *
+     * @param string $option Option
+     *
+     * @return string
+     * @throws RuntimeException
+     */
     public function getOptionFieldValue(string $option): string
     {
-        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)) {
+        if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)
+        ) {
             throw new RuntimeException('Unrecognised value in option: ' . $option);
         }
         return $matches[1];
     }
 
+    /**
+     * Method isOptionSelected
+     *
+     * @param string $option Option
+     *
+     * @return bool
+     */
     public function isOptionSelected(string $option): bool
     {
         return (bool)preg_match('/<option\s[^>]*\bselected\b/', $option, $matches);
     }
 
+    /**
+     * Method isMultiSelectField
+     *
+     * @param string $select Select
+     *
+     * @return bool
+     */
     public function isMultiSelectField(string $select): bool
     {
         return (bool)preg_match('/<select\s[^>]*\bmultiple\b/', $select, $matches);
     }
 
     /**
-     * @return array<string>
+     * Method getOptionFieldContents
+     *
+     * @param string $select Select
+     *
+     * @return string[]
+     * @throws RuntimeException
      */
     public function getOptionFieldContents(string $select): array
     {
@@ -329,15 +574,32 @@ class Tester
     }
     
     /**
-     * @return array<string>
+     * Method getSelectFieldContents
+     *
+     * @param string $name     Name
+     * @param string $contents Contents
+     *
+     * @return string[]
+     * @throws RuntimeException
      */
     public function getSelectFieldContents(string $name, string $contents): array
     {
-        if (!preg_match_all('/<select\s+name\s*=\s*"' . preg_quote($name) . '"(.+?)<\/select>/s', $contents, $matches)) {
-            throw new RuntimeException('Select element not found: <select name="' . $name . '"...</select>');
+        if (!preg_match_all(
+            '/<select\s+name\s*=\s*"' . preg_quote($name) .
+                        '"(.+?)<\/select>/s',
+            $contents,
+            $matches
+        )
+        ) {
+            throw new RuntimeException(
+                'Select element not found: <select name="' . $name . '"...</select>'
+            );
         }
         if (!isset($matches[0])) {
-            throw new RuntimeException('Select element does not have a value: <select name="' . $name . '"...</select>');
+            throw new RuntimeException(
+                'Select element does not have a value: <select name="' .
+                    $name . '"...</select>'
+            );
         }
         return $matches[0];
     }

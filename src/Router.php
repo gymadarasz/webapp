@@ -1,25 +1,48 @@
 <?php declare(strict_types = 1);
 
+/**
+ * Router
+ *
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
+
 namespace GyMadarasz\WebApp;
 
-use RuntimeException;
-use ReflectionClass;
-use ReflectionMethod;
-use GyMadarasz\WebApp\Service\Invoker;
 use GyMadarasz\WebApp\Service\Globals;
-use GyMadarasz\WebApp\Controller\ErrorPage;
+use GyMadarasz\WebApp\Service\Invoker;
+use function json_encode;
 
+/**
+ * Router
+ *
+ * @category  PHP
+ * @package   GyMadarasz\WebApp
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
+ */
 class Router
 {
-
-    /** @var array<mixed> $routes */
-    private array $routes;
-
     /**
-     * @param array<mixed> $routes
+     * Method __construct
+     *
+     * @param mixed[] $routes  routes
+     * @param Invoker $invoker invoker
+     * @param Globals $globals globals
      */
-    public function __construct(array $routes, Invoker $invoker, Globals $globals = null)
-    {
+    public function __construct(
+        array $routes,
+        Invoker $invoker,
+        Globals $globals = null
+    ) {
         if (!$globals) {
             $globals = new Globals();
         }
@@ -29,12 +52,15 @@ class Router
         } else {
             $routes = $routes['public'] ?? $routes['*'];
         }
-        $routes = $routes[$globals->getMethod()] ?? $routes['*'];
-        $routes = $routes[$globals->getGet('q', '')] ?? $routes['*'];
+        $routesPerMethod = $routes[$globals->getMethod()] ?? $routes['*'];
+        $routesPerQuery = $routesPerMethod[$globals->getGet('q', '')] ??
+                $routesPerMethod['*'];
         
-        $results = $invoker->invoke($routes);
+        $results = $invoker->invoke($routesPerQuery);
         // $results = $ctrlr->{$routes[1]}();
-        if (is_array($results) || (is_object($results) && !method_exists($results, '__toString'))) {
+        if (is_array($results)
+            || (is_object($results) && !method_exists($results, '__toString'))
+        ) {
             $results = json_encode($results);
         }
         echo $results;

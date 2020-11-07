@@ -14,15 +14,21 @@ class NewPasswordPage
     {
         $token = $globals->getGet('token');
         if (!$user->doAuthByToken($token)) {
-            $output = $template->create('index.html.php', [
+            $output = $template->create(
+                'index.html.php',
+                [
                 'body' => 'pwdchange.html.php',
-            ]);
+                ]
+            );
             $output->set('error', 'Invalid token');
             return $output;
         }
-        return $template->create('index.html.php', [
+        return $template->create(
+            'index.html.php',
+            [
             'body' => 'pwdchange.html.php',
-        ]);
+            ]
+        );
     }
 
     // TODO needs more negative tests for new password posting
@@ -46,14 +52,20 @@ class NewPasswordPage
             $error = $passwordError;
         }
         if (!$error && $user->changePassword($password)) {
-            $output = $template->create('index.html.php', [
+            $output = $template->create(
+                'index.html.php',
+                [
                 'body' => 'login.html.php',
-            ]);
+                ]
+            );
             $output->set('message', 'Your password changed, please log in');
         } else {
-            $output = $template->create('index.html.php', [
+            $output = $template->create(
+                'index.html.php',
+                [
                 'body' => 'pwdchange.html.php',
-            ]);
+                ]
+            );
             $output->set('error', $error);
         }
         return $output;
