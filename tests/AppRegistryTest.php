@@ -42,7 +42,7 @@ class AppRegistryTest
         $this->appTest->getLogger()->test('I am going to the Login page.');
 
         $contents = $this->appTest->getTester()->get('');
-        $this->appTest->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
 
 
         $this->appTest->getLogger()->test(
@@ -57,8 +57,8 @@ class AppRegistryTest
             'password' => AppTest::USER_PASSWORD_OLD,
             ]
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Login failed');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Login failed');
     }
 
     protected function checkRegistryPageWorks(): void
@@ -66,7 +66,7 @@ class AppRegistryTest
         $this->appTest->getLogger()->test('I am going to Register page.');
 
         $contents = $this->appTest->getTester()->get('?q=registry');
-        $this->appTest->checkRegistryPage($contents);
+        $this->appTest->getAppChecker()->checkRegistryPage($contents);
 
 
         $this->appTest->getLogger()->test(
@@ -81,8 +81,8 @@ class AppRegistryTest
             'password' => AppTest::USER_PASSWORD_OLD,
             ]
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage(
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
             $contents,
             'Registration success, '
                 . 'please check your email inbox and validate your account, '
@@ -102,8 +102,8 @@ class AppRegistryTest
         $this->appTest->getLogger()->test('I am going to click on resend link.');
 
         $contents = $this->appTest->getTester()->get('?q=resend');
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage(
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
             $contents,
             'Attempt to resend activation email, '
                 . 'please check your email inbox and validate your account, '
@@ -124,8 +124,8 @@ class AppRegistryTest
             'password' => AppTest::USER_PASSWORD_OLD,
             ]
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Login failed');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Login failed');
 
 
         $this->appTest->getLogger()->test('I am going to check my activation email.');
@@ -143,8 +143,8 @@ class AppRegistryTest
         $contents = $this->appTest->getTester()->get(
             $this->appTest->getConfig()->get('baseUrl') . '?q=activate&token=incorrect'
         );
-        $this->appTest->checkErrorPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Activation token is incorrect.');
+        $this->appTest->getAppChecker()->checkErrorPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Activation token is incorrect.');
 
 
         $this->appTest->getLogger()->test(
@@ -154,8 +154,8 @@ class AppRegistryTest
         $contents = $this->appTest->getTester()->get(
             $this->appTest->getConfig()->get('baseUrl') . '?q=activate&token=' . $token
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage($contents, 'Your account is now activated.');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Your account is now activated.');
 
 
         $this->appTest->getLogger()->test(
@@ -181,19 +181,19 @@ class AppRegistryTest
             AppTest::USER_EMAIL,
             AppTest::USER_PASSWORD_OLD
         );
-        $this->appTest->checkMainPage($contents);
+        $this->appTest->getAppChecker()->checkMainPage($contents);
         
 
         $this->appTest->getLogger()->test('I am going to the restricted Index page.');
 
         $contents = $this->appTest->getTester()->get('');
-        $this->appTest->checkMainPage($contents);
+        $this->appTest->getAppChecker()->checkMainPage($contents);
 
 
         $this->appTest->getLogger()->test('I am going to Logout.');
 
         $contents = $this->appTest->getTester()->get('?q=logout');
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage($contents, 'Logout success');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Logout success');
     }
 }

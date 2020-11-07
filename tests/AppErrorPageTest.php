@@ -32,18 +32,19 @@ class AppErrorPageTest
         $this->appTest = $appTest;
         
         $this->checkErrorPageWorks();
+        $this->checkLoginAfterLoginShouldFails();
     }
     
     protected function checkErrorPageWorks(): void
     {
         $this->appTest->getLogger()->test('I am going to login with my new password');
         $contents = $this->appTest->checkIfICanLogin();
-        $this->appTest->checkMainPage($contents);
+        $this->appTest->getAppChecker()->checkMainPage($contents);
 
         $this->appTest->getLogger()->test('I am going to the restricted Index page.');
 
         $contents = $this->appTest->getTester()->get('');
-        $this->appTest->checkMainPage($contents);
+        $this->appTest->getAppChecker()->checkMainPage($contents);
 
 
         $this->appTest->getLogger()->test(
@@ -52,15 +53,15 @@ class AppErrorPageTest
         );
 
         $contents = $this->appTest->getTester()->get('?q=this-page-should-not-exists');
-        $this->appTest->checkErrorPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Request is not supported.');
+        $this->appTest->getAppChecker()->checkErrorPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Request is not supported.');
         
 
         $this->appTest->getLogger()->test('I am going to Logout.');
 
         $contents = $this->appTest->getTester()->get('?q=logout');
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage($contents, 'Logout success');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Logout success');
 
 
         $this->appTest->getLogger()->test(
@@ -69,7 +70,42 @@ class AppErrorPageTest
         );
 
         $contents = $this->appTest->getTester()->get('?q=this-page-should-not-exists');
-        $this->appTest->checkErrorPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Request is not supported.');
+        $this->appTest->getAppChecker()->checkErrorPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Request is not supported.');
+    }
+
+    /**
+     * Method checkLoginAfterLoginShouldFails
+     *
+     * @return void
+     */
+    protected function checkLoginAfterLoginShouldFails(): void
+    {
+        $this->appTest->getLogger()->test('I am going to login');
+        $contents = $this->appTest->checkIfICanLogin();
+        $this->appTest->getAppChecker()->checkMainPage($contents);
+
+
+        $this->appTest->getLogger()->test(
+            'I am going to try login again '
+                . 'when I am logged in so that I get an error page.'
+        );
+
+        $contents = $this->appTest->getTester()->post(
+            '',
+            [
+            'email' => AppTest::USER_EMAIL,
+            'password' => AppTest::USER_PASSWORD,
+            ]
+        );
+        $this->appTest->getAppChecker()->checkErrorPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Request is not supported.');
+
+
+        $this->appTest->getLogger()->test('I am going to Logout.');
+
+        $contents = $this->appTest->getTester()->get('?q=logout');
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Logout success');
     }
 }

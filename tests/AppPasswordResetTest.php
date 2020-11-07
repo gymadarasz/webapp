@@ -39,7 +39,7 @@ class AppPasswordResetTest
         $this->appTest->getLogger()->test('I am going to reset my password.');
 
         $contents = $this->appTest->getTester()->get('?q=pwdreset');
-        $this->appTest->checkPasswordResetPage($contents);
+        $this->appTest->getAppChecker()->checkPasswordResetPage($contents);
 
 
         $this->appTest->getLogger()->test(
@@ -52,8 +52,8 @@ class AppPasswordResetTest
             'email' => AppTest::USER_EMAIL,
             ]
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage(
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
             $contents,
             'We sent an email to your inbox, '
                 . 'please follow the given instructions to change your password'
@@ -76,8 +76,8 @@ class AppPasswordResetTest
         $contents = $this->appTest->getTester()->get(
             $this->appTest->getConfig()->get('baseUrl') . '?q=newpassword&token=invalid'
         );
-        $this->appTest->checkChangePasswordPage($contents);
-        $this->appTest->checkPageContainsError($contents, 'Invalid token');
+        $this->appTest->getAppChecker()->checkChangePasswordPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Invalid token');
 
 
         $this->appTest->getLogger()->test(
@@ -88,7 +88,7 @@ class AppPasswordResetTest
         $contents = $this->appTest->getTester()->get(
             $this->appTest->getConfig()->get('baseUrl') . '?q=newpassword&token=' . $token
         );
-        $this->appTest->checkChangePasswordPage($contents);
+        $this->appTest->getAppChecker()->checkChangePasswordPage($contents);
 
 
         $this->appTest->getLogger()->test(
@@ -103,8 +103,8 @@ class AppPasswordResetTest
             'password_retype' => AppTest::USER_PASSWORD,
             ]
         );
-        $this->appTest->checkLoginPage($contents);
-        $this->appTest->checkPageContainsMessage(
+        $this->appTest->getAppChecker()->checkLoginPage($contents);
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
             $contents,
             'Your password changed, please log in'
         );
