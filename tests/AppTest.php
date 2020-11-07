@@ -1,8 +1,6 @@
 <?php declare(strict_types = 1);
         
 /**
- * AppTest
- *
  * PHP version 7.4
  *
  * @category  PHP
@@ -79,7 +77,7 @@ class AppTest
      *
      * @return void
      */
-    protected function cleanupMails(): void
+    public function cleanupMails(): void
     {
         $this->logger->test('I am going to delete all saved emails.');
 
@@ -105,17 +103,15 @@ class AppTest
      *
      * @return void
      */
-    public function test(): void
+    public function test(Tester $tester, AppRegistryTest $regTest): void
     {
 
         // ----- clean up -----
         $this->cleanup();
 
         // ------- tests ----------
-        $this->checkIncorrectLogin();
-        $this->checkRegistryPageWorks();
-        $this->checkActivationEmailResend();
-        $this->checkLoginLogoutWorks();
+        $regTest->testWith($this);
+        
         $this->checkPasswordResetWorks();
         $this->checkErrorPageWorks();
         $this->checkLoginAfterLoginShouldFails();
@@ -124,166 +120,6 @@ class AppTest
 
         // ----- clean up -----
         //$this->cleanup();
-    }
-    
-    protected function checkIncorrectLogin(): void
-    {
-        $this->logger->test('I am going to the Login page.');
-
-        $contents = $this->tester->get('');
-        $this->checkLoginPage($contents);
-
-
-        $this->logger->test(
-            'I am posting my account, but it should fails because '
-                . 'I am not registered.'
-        );
-
-        $contents = $this->tester->post(
-            '',
-            [
-            'email' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD_OLD,
-            ]
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsError($contents, 'Login failed');
-    }
-
-    protected function checkRegistryPageWorks(): void
-    {
-        $this->logger->test('I am going to Register page.');
-
-        $contents = $this->tester->get('?q=registry');
-        $this->checkRegistryPage($contents);
-
-
-        $this->logger->test(
-            'I am posting my registry details to the Register page.'
-        );
-
-        $contents = $this->tester->post(
-            '?q=registry',
-            [
-            'email' => AppTest::USER_EMAIL,
-            'email_retype' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD_OLD,
-            ]
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage(
-            $contents,
-            'Registration success, '
-                . 'please check your email inbox and validate your account, '
-                . 'or try to resend by <a href="?q=resend">click here</a>'
-        );
-    }
-    
-    protected function checkActivationEmailResend(): void
-    {
-        $this->logger->test('I am going to check my activation email.');
-
-        $email = $this->checkMail('Activate your account');
-        $token = $this->checkRegistrationEmail($email);
-        $this->cleanupMails();
-
-
-        $this->logger->test('I am going to click on resend link.');
-
-        $contents = $this->tester->get('?q=resend');
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage(
-            $contents,
-            'Attempt to resend activation email, '
-                . 'please check your email inbox and validate your account, '
-                . 'or try to resend by <a href="?q=resend">click here</a>'
-        );
-
-
-        $this->logger->test(
-            'I am posting my account details to Login page, '
-                . 'but it should fails because '
-                . 'I am not activated my newly registered account.'
-        );
-
-        $contents = $this->tester->post(
-            '',
-            [
-            'email' => AppTest::USER_EMAIL,
-            'password' => AppTest::USER_PASSWORD_OLD,
-            ]
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsError($contents, 'Login failed');
-
-
-        $this->logger->test('I am going to check my activation email.');
-
-        $email = $this->checkMail('Activate your account');
-        $token = $this->checkRegistrationEmail($email);
-        $this->cleanupMails();
-
-
-        $this->logger->test(
-            'I am going to try to activate my account '
-                . 'with an incorrect activation token.'
-        );
-
-        $contents = $this->tester->get(
-            $this->config->get('baseUrl') . '?q=activate&token=incorrect'
-        );
-        $this->checkErrorPage($contents);
-        $this->checkPageContainsError($contents, 'Activation token is incorrect.');
-
-
-        $this->logger->test(
-            'I am going to activate my account with the correct activation token.'
-        );
-
-        $contents = $this->tester->get(
-            $this->config->get('baseUrl') . '?q=activate&token=' . $token
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage($contents, 'Your account is now activated.');
-
-
-        $this->logger->test(
-            'I am just check if I am activated in the database properly?'
-        );
-        $results = $this->mysql->selectOne(
-            "SELECT active FROM user WHERE email = '" .
-                AppTest::USER_EMAIL . "' LIMIT 1;"
-        );
-        $this->tester->getAssertor()->assertTrue(isset($results['active']));
-        $this->tester->getAssertor()->assertEquals(
-            1,
-            (int)((array)$results)['active']
-        );
-    }
-    
-    protected function checkLoginLogoutWorks(): void
-    {
-        $this->logger->test(
-            'I am going to post my newly registered account details.'
-        );
-        $contents = $this->checkIfICanLogin(
-            AppTest::USER_EMAIL,
-            AppTest::USER_PASSWORD_OLD
-        );
-        $this->checkMainPage($contents);
-        
-
-        $this->logger->test('I am going to the restricted Index page.');
-
-        $contents = $this->tester->get('');
-        $this->checkMainPage($contents);
-
-
-        $this->logger->test('I am going to Logout.');
-
-        $contents = $this->tester->get('?q=logout');
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage($contents, 'Logout success');
     }
     
     protected function checkPasswordResetWorks(): void
@@ -409,7 +245,7 @@ class AppTest
      *
      * @return string
      */
-    protected function checkIfICanLogin(
+    public function checkIfICanLogin(
         string $user = AppTest::USER_EMAIL,
         string $password = AppTest::USER_PASSWORD
     ): string {
@@ -463,13 +299,8 @@ class AppTest
         $this->checkLoginPage($contents);
         $this->checkPageContainsMessage($contents, 'Logout success');
     }
-
-    /**
-     * Method checkInvalidRegistryShouldFails
-     *
-     * @return void
-     */
-    protected function checkInvalidRegistryShouldFails(): void
+    
+    protected function checkEmptyRegistrationValidation(): void
     {
         $this->logger->test('I am going to send an empty registration');
 
@@ -483,8 +314,10 @@ class AppTest
         );
         $this->checkRegistryPage($contents);
         $this->checkPageContainsError($contents, 'Email can not be empty');
-
-
+    }
+    
+    protected function checkTwoEmailNotMatchValidation(): void
+    {
         $this->logger->test('I am going to send two different email address');
 
         $contents = $this->tester->post(
@@ -497,8 +330,10 @@ class AppTest
         );
         $this->checkRegistryPage($contents);
         $this->checkPageContainsError($contents, 'Email fields are not the same');
-
-
+    }
+    
+    protected function checkInvalidEmailValidation(): void
+    {
         $this->logger->test('I am going to send an invalid email address');
 
         $contents = $this->tester->post(
@@ -511,8 +346,10 @@ class AppTest
         );
         $this->checkRegistryPage($contents);
         $this->checkPageContainsError($contents, 'Email address is invalid');
-
-
+    }
+    
+    protected function checkShortPasswordValidation(): void
+    {
         $this->logger->test('I am going to send a short password');
 
         $contents = $this->tester->post(
@@ -528,8 +365,10 @@ class AppTest
             $contents,
             'Your Password Must Contain At Least 8 Characters!'
         );
+    }
     
-
+    protected function checkPasswordWithoutNumber(): void
+    {
         $this->logger->test('I am going to send a password without any number');
 
         $contents = $this->tester->post(
@@ -545,8 +384,10 @@ class AppTest
             $contents,
             'Your Password Must Contain At Least 1 Number!'
         );
-      
-
+    }
+    
+    protected function checkPasswordWithoutCapitalValidation(): void
+    {
         $this->logger->test(
             'I am going to send a password without any capital letter'
         );
@@ -564,8 +405,10 @@ class AppTest
             $contents,
             'Your Password Must Contain At Least 1 Capital Letter!'
         );
-      
-
+    }
+    
+    protected function checkPasswordWithoutLowercaseValidation(): void
+    {
         $this->logger->test(
             'I am going to send a password without any Lowercase Letter'
         );
@@ -583,8 +426,10 @@ class AppTest
             $contents,
             'Your Password Must Contain At Least 1 Lowercase Letter!'
         );
-
-
+    }
+    
+    protected function checkUserAlreadyRediteredValidation(): void
+    {
         $this->logger->test('I am going to try to registrate an already exist user');
 
         $contents = $this->tester->post(
@@ -597,6 +442,23 @@ class AppTest
         );
         $this->checkRegistryPage($contents);
         $this->checkPageContainsError($contents, 'Registration failed');
+    }
+    
+    /**
+     * Method checkInvalidRegistryShouldFails
+     *
+     * @return void
+     */
+    protected function checkInvalidRegistryShouldFails(): void
+    {
+        $this->checkEmptyRegistrationValidation();
+        $this->checkTwoEmailNotMatchValidation();
+        $this->checkInvalidEmailValidation();
+        $this->checkShortPasswordValidation();
+        $this->checkPasswordWithoutNumber();
+        $this->checkPasswordWithoutCapitalValidation();
+        $this->checkPasswordWithoutLowercaseValidation();
+        $this->checkUserAlreadyRediteredValidation();
     }
 
     /**
@@ -647,7 +509,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkErrorPage(string $contents): void
+    public function checkErrorPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Error page properly.'
@@ -667,7 +529,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkLoginPage(string $contents): void
+    public function checkLoginPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Login page properly.'
@@ -707,7 +569,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkRegistryPage(string $contents): void
+    public function checkRegistryPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Registry page properly.'
@@ -778,7 +640,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkMainPage(string $contents): void
+    public function checkMainPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Main page properly.'
@@ -830,7 +692,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkPageContainsMessage(
+    public function checkPageContainsMessage(
         string $contents,
         string $message
     ): void {
@@ -853,7 +715,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkPageContainsError(string $contents, string $error): void
+    public function checkPageContainsError(string $contents, string $error): void
     {
         $this->logger->test(
             'I am going to check that I can see the error "' . $error .
@@ -873,7 +735,7 @@ class AppTest
      *
      * @return string
      */
-    protected function checkMail(string $subject): string
+    public function checkMail(string $subject): string
     {
         $this->logger->test(
             'I am going to check that I have got an email with subject "' .
@@ -902,7 +764,7 @@ class AppTest
      *
      * @return string
      */
-    protected function checkRegistrationEmail(string $email): string
+    public function checkRegistrationEmail(string $email): string
     {
         $this->logger->test(
             'I am going to check that the Registration email is correct.'
@@ -974,5 +836,45 @@ class AppTest
         )[0];
         $this->tester->getAssertor()->assertLongerThan(40, $token);
         return $token;
+    }
+
+    /**
+     * Method getLogger
+     *
+     * @return Logger
+     */
+    public function getLogger(): Logger
+    {
+        return $this->logger;
+    }
+
+    /**
+     * Method getTester
+     *
+     * @return \GyMadarasz\Test\Tester
+     */
+    public function getTester(): Tester
+    {
+        return $this->tester;
+    }
+
+    /**
+     * Method getConfig
+     *
+     * @return Config
+     */
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
+
+    /**
+     * Method getMysql
+     *
+     * @return Mysql
+     */
+    public function getMysql(): Mysql
+    {
+        return $this->mysql;
     }
 }
