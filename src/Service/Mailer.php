@@ -58,15 +58,15 @@ class Mailer
     /**
      * Method send
      *
-     * @param string $to      to
-     * @param string $subject subject
-     * @param string $body    body
+     * @param string $addressTo addressTo
+     * @param string $subject   subject
+     * @param string $body      body
      *
      * @return bool
      * @throws RuntimeException
      */
     public function send(
-        string $to,
+        string $addressTo,
         string $subject,
         string $body
     ): bool {
@@ -108,7 +108,7 @@ class Mailer
             );
             
             // Add a recipient
-            $mail->addAddress($to);
+            $mail->addAddress($addressTo);
             
             $mail->addReplyTo(
                 $this->config->get('mailerNoreplyEmail'),
@@ -135,34 +135,11 @@ class Mailer
             if ($this->config->get('mailerSendMails')) {
                 $mail->send();
                 $this->logger->info(
-                    "Email sent to: $to\nSubject: $subject\nBody:\n$body\n\n"
+                    "Email sent to: $addressTo\nSubject: $subject\nBody:\n$body\n\n"
                 );
             }
             if ($this->config->get('mailerSaveMails')) {
-                if ((!file_exists($this->config->get('mailerSaveMailsPath'))
-                    || !is_dir($this->config->get('mailerSaveMailsPath')))
-                    && !mkdir(
-                        $this->config->get('mailerSaveMailsPath'),
-                        $this->config->get('mailerSaveMailsMode'),
-                        true
-                    )
-                ) {
-                    throw new RuntimeException(
-                        "Folder creation error: " .
-                            $this->config->get('mailerSaveMailsPath')
-                    );
-                }
-                $fname = $this->config->get('mailerSaveMailsPath') .
-                        '/' . date("Y-m-s H-i-s") . " to $to ($subject).html";
-                if (file_put_contents(
-                    $fname,
-                    $body
-                )
-                ) {
-                    $this->logger->info("Email saved to: $fname");
-                } else {
-                    $this->logger->error("Message could not be saved to: $fname");
-                }
+                $this->saveMail($addressTo, $subject, $body);
             }
             return true;
         } catch (Exception $e) {
@@ -173,5 +150,43 @@ class Mailer
             );
             return false;
         }
+    }
+    
+    /**
+     * Method saveMail
+     *
+     * @param string $addressTo addressTo
+     * @param string $subject   subject
+     * @param string $body      body
+     *
+     * @return bool
+     * @throws RuntimeException
+     */
+    protected function saveMail(
+        string $addressTo,
+        string $subject,
+        string $body
+    ): bool {
+        if ((!file_exists($this->config->get('mailerSaveMailsPath'))
+            || !is_dir($this->config->get('mailerSaveMailsPath')))
+            && !mkdir(
+                $this->config->get('mailerSaveMailsPath'),
+                $this->config->get('mailerSaveMailsMode'),
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                "Folder creation error: " .
+                            $this->config->get('mailerSaveMailsPath')
+            );
+        }
+        $fname = $this->config->get('mailerSaveMailsPath') .
+                        '/' . date("Y-m-s H-i-s") . " to $addressTo ($subject).html";
+        if (file_put_contents($fname, $body)) {
+            $this->logger->info("Email saved to: $fname");
+            return true;
+        }
+        $this->logger->error("Message could not be saved to: $fname");
+        return false;
     }
 }

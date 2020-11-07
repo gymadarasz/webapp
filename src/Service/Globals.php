@@ -24,6 +24,8 @@ namespace GyMadarasz\WebApp\Service;
  * @copyright 2020 Gyula Madarasz
  * @license   Copyright (c) all right reserved.
  * @link      this
+ *
+ * @SuppressWarnings(PHPMD.Superglobals)
  */
 class Globals
 {

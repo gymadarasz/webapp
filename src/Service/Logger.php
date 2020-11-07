@@ -75,15 +75,16 @@ class Logger
     /**
      * Method doLogException
      *
-     * @param Exception $e e
+     * @param Exception $exception exception
      *
      * @return void
      */
-    public function doLogException(Exception $e): void
+    public function doLogException(Exception $exception): void
     {
         $this->error(
-            'Exception occured: ' . get_class($e) . ': "' . $e->getMessage() .
-                "\"\nTrace:\n" . $e->getTraceAsString()
+            'Exception occured: ' . get_class($exception) . ': "' .
+                $exception->getMessage() .
+                "\"\nTrace:\n" . $exception->getTraceAsString()
         );
     }
 

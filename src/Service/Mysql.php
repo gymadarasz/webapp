@@ -141,7 +141,8 @@ class Mysql
     public function query(string $query): bool
     {
         $this->connect();
-        if ($ret = (bool)$this->mysqli->query($query)) {
+        $ret = (bool)$this->mysqli->query($query);
+        if ($ret) {
             return $ret;
         }
         throw new RuntimeException(

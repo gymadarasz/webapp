@@ -74,9 +74,13 @@ class Invoker
      *
      * @return mixed[]
      * @throws RuntimeException
+     *
+     * @SuppressWarnings(PHPMD.MissingImport)
      */
-    protected function getInstance(string $class, array $constructorArgs = []): array
-    {
+    protected function getInstance(
+        string $class,
+        array $constructorArgs = []
+    ): array {
         if (isset($this->instances[$class])) {
             return $this->instances[$class];
         }
