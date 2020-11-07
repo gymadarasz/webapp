@@ -39,26 +39,6 @@ class AppTest
     protected Mysql $mysql;
 
     /**
-     * Method __construct
-     *
-     * @param Tester $tester tester
-     * @param Config $config config
-     * @param Logger $logger logger
-     * @param Mysql  $mysql  mysql
-     */
-    public function __construct(
-        Tester $tester,
-        Config $config,
-        Logger $logger,
-        Mysql $mysql
-    ) {
-        $this->tester = $tester;
-        $this->config = $config;
-        $this->logger = $logger;
-        $this->mysql = $mysql;
-    }
-
-    /**
      * Method cleanupUsers
      *
      * @return void
@@ -101,19 +81,35 @@ class AppTest
     /**
      * Method test
      *
+     * @param Tester          $tester  tester
+     * @param Config          $config  config
+     * @param Logger          $logger  logger
+     * @param Mysql           $mysql   mysql
+     * @param AppRegistryTest $regTest regTest
+     *
      * @return void
      */
-    public function test(Tester $tester, AppRegistryTest $regTest): void
-    {
-
+    public function test(
+        Tester $tester,
+        Config $config,
+        Logger $logger,
+        Mysql $mysql,
+        AppRegistryTest $regTest,
+        AppPasswordResetTest $pwdResetTest,
+        AppErrorPageTest $errPageTest
+    ): void {
+        $this->tester = $tester;
+        $this->config = $config;
+        $this->logger = $logger;
+        $this->mysql = $mysql;
+        
         // ----- clean up -----
         $this->cleanup();
 
         // ------- tests ----------
         $regTest->testWith($this);
-        
-        $this->checkPasswordResetWorks();
-        $this->checkErrorPageWorks();
+        $pwdResetTest->testWith($this);
+        $errPageTest->testWith($this);
         $this->checkLoginAfterLoginShouldFails();
         $this->checkInvalidRegistryShouldFails();
         $this->checkInvalidPasswordResetShouldFails();
@@ -122,121 +118,6 @@ class AppTest
         //$this->cleanup();
     }
     
-    protected function checkPasswordResetWorks(): void
-    {
-        $this->logger->test('I am going to reset my password.');
-
-        $contents = $this->tester->get('?q=pwdreset');
-        $this->checkPasswordResetPage($contents);
-
-
-        $this->logger->test(
-            'I am going to post my email address to Password Reset page.'
-        );
-
-        $contents = $this->tester->post(
-            '?q=pwdreset',
-            [
-            'email' => AppTest::USER_EMAIL,
-            ]
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage(
-            $contents,
-            'We sent an email to your inbox, '
-                . 'please follow the given instructions to change your password'
-        );
-
-
-        $this->logger->test(
-            'I am going to check my emails for password reset instructions.'
-        );
-        
-        $email = $this->checkMail('Password reset request');
-        $token = $this->checkPasswordResetEmail($email);
-        $this->cleanupMails();
-
-
-        $this->logger->test(
-            'I am going to check the Password Reset page with an incorrect token.'
-        );
-
-        $contents = $this->tester->get(
-            $this->config->get('baseUrl') . '?q=newpassword&token=invalid'
-        );
-        $this->checkChangePasswordPage($contents);
-        $this->checkPageContainsError($contents, 'Invalid token');
-
-
-        $this->logger->test(
-            'I am going to follow the Password Reset link '
-                . 'to the Password Reset page.'
-        );
-
-        $contents = $this->tester->get(
-            $this->config->get('baseUrl') . '?q=newpassword&token=' . $token
-        );
-        $this->checkChangePasswordPage($contents);
-
-
-        $this->logger->test(
-            'I am going to post my new password '
-            . 'to reset my password.'
-        );
-
-        $contents = $this->tester->post(
-            $this->config->get('baseUrl') . '?q=newpassword&token=' . $token,
-            [
-            'password' => AppTest::USER_PASSWORD,
-            'password_retype' => AppTest::USER_PASSWORD,
-            ]
-        );
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage(
-            $contents,
-            'Your password changed, please log in'
-        );
-    }
-    
-    protected function checkErrorPageWorks(): void
-    {
-        $this->logger->test('I am going to login with my new password');
-        $contents = $this->checkIfICanLogin();
-        $this->checkMainPage($contents);
-
-        $this->logger->test('I am going to the restricted Index page.');
-
-        $contents = $this->tester->get('');
-        $this->checkMainPage($contents);
-
-
-        $this->logger->test(
-            'I am going to a non-exists page '
-                . 'while I am logged in to see it shows the error page.'
-        );
-
-        $contents = $this->tester->get('?q=this-page-should-not-exists');
-        $this->checkErrorPage($contents);
-        $this->checkPageContainsError($contents, 'Request is not supported.');
-        
-
-        $this->logger->test('I am going to Logout.');
-
-        $contents = $this->tester->get('?q=logout');
-        $this->checkLoginPage($contents);
-        $this->checkPageContainsMessage($contents, 'Logout success');
-
-
-        $this->logger->test(
-            'I am going to a non-exists page '
-                . 'while I am logged out to see it shows the error page.'
-        );
-
-        $contents = $this->tester->get('?q=this-page-should-not-exists');
-        $this->checkErrorPage($contents);
-        $this->checkPageContainsError($contents, 'Request is not supported.');
-    }
-
     /**
      * Method checkIfICanLogin
      *
@@ -613,7 +494,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkPasswordResetPage(string $contents): void
+    public function checkPasswordResetPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Password Reset page properly.'
@@ -660,7 +541,7 @@ class AppTest
      *
      * @return void
      */
-    protected function checkChangePasswordPage(string $contents): void
+    public function checkChangePasswordPage(string $contents): void
     {
         $this->logger->test(
             'I am going to check that I can see the Change Password page properly.'
@@ -799,7 +680,7 @@ class AppTest
      *
      * @return string
      */
-    protected function checkPasswordResetEmail(string $email): string
+    public function checkPasswordResetEmail(string $email): string
     {
         $this->logger->test(
             'I am going to check that the Password Reset email is correct.'
@@ -851,7 +732,7 @@ class AppTest
     /**
      * Method getTester
      *
-     * @return \GyMadarasz\Test\Tester
+     * @return Tester
      */
     public function getTester(): Tester
     {
