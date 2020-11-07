@@ -27,6 +27,13 @@ class AppPasswordResetTest
 {
     protected AppTest $appTest;
     
+    /**
+     * Method testWith
+     *
+     * @param \GyMadarasz\Test\AppTest $appTest appTest
+     *
+     * @return void
+     */
     public function testWith(AppTest $appTest): void
     {
         $this->appTest = $appTest;
@@ -34,6 +41,11 @@ class AppPasswordResetTest
         $this->checkPasswordResetWorks();
     }
     
+    /**
+     * Method checkPasswordResetWorks
+     *
+     * @return void
+     */
     protected function checkPasswordResetWorks(): void
     {
         $this->appTest->getLogger()->test('I am going to reset my password.');
@@ -74,10 +86,14 @@ class AppPasswordResetTest
         );
 
         $contents = $this->appTest->getTester()->get(
-            $this->appTest->getConfig()->get('baseUrl') . '?q=newpassword&token=invalid'
+            $this->appTest->getConfig()->get('baseUrl') .
+                '?q=newpassword&token=invalid'
         );
         $this->appTest->getAppChecker()->checkChangePasswordPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Invalid token');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Invalid token'
+        );
 
 
         $this->appTest->getLogger()->test(
@@ -86,7 +102,8 @@ class AppPasswordResetTest
         );
 
         $contents = $this->appTest->getTester()->get(
-            $this->appTest->getConfig()->get('baseUrl') . '?q=newpassword&token=' . $token
+            $this->appTest->getConfig()->get('baseUrl') .
+                '?q=newpassword&token=' . $token
         );
         $this->appTest->getAppChecker()->checkChangePasswordPage($contents);
 
@@ -97,7 +114,8 @@ class AppPasswordResetTest
         );
 
         $contents = $this->appTest->getTester()->post(
-            $this->appTest->getConfig()->get('baseUrl') . '?q=newpassword&token=' . $token,
+            $this->appTest->getConfig()->get('baseUrl') .
+                '?q=newpassword&token=' . $token,
             [
             'password' => AppTest::USER_PASSWORD,
             'password_retype' => AppTest::USER_PASSWORD,

@@ -102,7 +102,13 @@ class AppTest
     /**
      * Method test
      *
-     * @param AppRegistryTest $regTest regTest
+     * @param Tester                 $tester              tester
+     * @param AppChecker             $appChecker          appChecker
+     * @param AppRegistryTest        $regTest             regTest
+     * @param AppPasswordResetTest   $pwdResetTest        pwdResetTest
+     * @param AppErrorPageTest       $errPageTest         errPageTest
+     * @param AppInvalidRegTest      $invalidRegTest      invalidRegTest
+     * @param AppInvalidPwdResetTest $invalidPwdResetTest invalidPwdResetTest
      *
      * @return void
      */

@@ -1,17 +1,27 @@
-<?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+<?php declare(strict_types = 1);
+        
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 
 namespace GyMadarasz\Test;
 
 /**
- * Description of AppChecker
+ * AppChecker
  *
- * @author gyula
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 class AppChecker
 {
@@ -42,7 +52,10 @@ class AppChecker
             'I am going to check that I can see the Error page properly.'
         );
 
-        $this->appTest->getTester()->getAssertor()->assertContains('<h1>Error</h1>', $contents);
+        $this->appTest->getTester()->getAssertor()->assertContains(
+            '<h1>Error</h1>',
+            $contents
+        );
         $this->appTest->getTester()->getAssertor()->assertContains(
             '<a href="' . $this->appTest->getConfig()->get('baseUrl') . '">Back</a>',
             $contents
@@ -62,7 +75,10 @@ class AppChecker
             'I am going to check that I can see the Login page properly.'
         );
 
-        $this->appTest->getTester()->getAssertor()->assertContains('<h1>Login</h1>', $contents);
+        $this->appTest->getTester()->getAssertor()->assertContains(
+            '<h1>Login</h1>',
+            $contents
+        );
         $this->appTest->getTester()->getAssertor()->assertContains(
             '<form method="POST" action="?q=">',
             $contents
@@ -102,7 +118,10 @@ class AppChecker
             'I am going to check that I can see the Registry page properly.'
         );
 
-        $this->appTest->getTester()->getAssertor()->assertContains('<h1>Registry</h1>', $contents);
+        $this->appTest->getTester()->getAssertor()->assertContains(
+            '<h1>Registry</h1>',
+            $contents
+        );
         $this->appTest->getTester()->getAssertor()->assertContains(
             '<input type="email" name="email"',
             $contents
@@ -173,7 +192,10 @@ class AppChecker
             'I am going to check that I can see the Main page properly.'
         );
 
-        $this->appTest->getTester()->getAssertor()->assertContains('<h1>Main</h1>', $contents);
+        $this->appTest->getTester()->getAssertor()->assertContains(
+            '<h1>Main</h1>',
+            $contents
+        );
         $this->appTest->getTester()->getAssertor()->assertContains(
             '<a href="?q=logout">Logout</a>',
             $contents

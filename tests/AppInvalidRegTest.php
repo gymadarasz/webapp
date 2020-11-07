@@ -1,22 +1,39 @@
-<?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+<?php declare(strict_types = 1);
+        
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 
 namespace GyMadarasz\Test;
 
 /**
- * Description of AppInvalidRegTest
+ * AppInvalidRegTest
  *
- * @author gyula
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 class AppInvalidRegTest
 {
     protected AppTest $appTest;
     
+    /**
+     * Method testWith
+     *
+     * @param \GyMadarasz\Test\AppTest $appTest appTest
+     *
+     * @return void
+     */
     public function testWith(AppTest $appTest): void
     {
         $this->appTest = $appTest;
@@ -41,9 +58,16 @@ class AppInvalidRegTest
         $this->checkUserAlreadyRediteredValidation();
     }
     
+    /**
+     * Method checkEmptyRegistrationValidation
+     *
+     * @return void
+     */
     protected function checkEmptyRegistrationValidation(): void
     {
-        $this->appTest->getLogger()->test('I am going to send an empty registration');
+        $this->appTest->getLogger()->test(
+            'I am going to send an empty registration'
+        );
 
         $contents = $this->appTest->getTester()->post(
             '?q=registry',
@@ -54,13 +78,22 @@ class AppInvalidRegTest
             ]
         );
         $this->appTest->getAppChecker()->checkRegistryPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Email can not be empty');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Email can not be empty'
+        );
     }
     
-    
+    /**
+     * Method checkTwoEmailNotMatchValidation
+     *
+     * @return void
+     */
     protected function checkTwoEmailNotMatchValidation(): void
     {
-        $this->appTest->getLogger()->test('I am going to send two different email address');
+        $this->appTest->getLogger()->test(
+            'I am going to send two different email address'
+        );
 
         $contents = $this->appTest->getTester()->post(
             '?q=registry',
@@ -71,12 +104,22 @@ class AppInvalidRegTest
             ]
         );
         $this->appTest->getAppChecker()->checkRegistryPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Email fields are not the same');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Email fields are not the same'
+        );
     }
     
+    /**
+     * Method checkInvalidEmailValidation
+     *
+     * @return void
+     */
     protected function checkInvalidEmailValidation(): void
     {
-        $this->appTest->getLogger()->test('I am going to send an invalid email address');
+        $this->appTest->getLogger()->test(
+            'I am going to send an invalid email address'
+        );
 
         $contents = $this->appTest->getTester()->post(
             '?q=registry',
@@ -87,9 +130,17 @@ class AppInvalidRegTest
             ]
         );
         $this->appTest->getAppChecker()->checkRegistryPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Email address is invalid');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Email address is invalid'
+        );
     }
     
+    /**
+     * Method checkShortPasswordValidation
+     *
+     * @return void
+     */
     protected function checkShortPasswordValidation(): void
     {
         $this->appTest->getLogger()->test('I am going to send a short password');
@@ -109,9 +160,16 @@ class AppInvalidRegTest
         );
     }
     
+    /**
+     * Method checkPasswordWithoutNumber
+     *
+     * @return void
+     */
     protected function checkPasswordWithoutNumber(): void
     {
-        $this->appTest->getLogger()->test('I am going to send a password without any number');
+        $this->appTest->getLogger()->test(
+            'I am going to send a password without any number'
+        );
 
         $contents = $this->appTest->getTester()->post(
             '?q=registry',
@@ -128,6 +186,11 @@ class AppInvalidRegTest
         );
     }
     
+    /**
+     * Method checkPasswordWithoutCapitalValidation
+     *
+     * @return void
+     */
     protected function checkPasswordWithoutCapitalValidation(): void
     {
         $this->appTest->getLogger()->test(
@@ -149,6 +212,11 @@ class AppInvalidRegTest
         );
     }
     
+    /**
+     * Method checkPasswordWithoutLowercaseValidation
+     *
+     * @return void
+     */
     protected function checkPasswordWithoutLowercaseValidation(): void
     {
         $this->appTest->getLogger()->test(
@@ -170,9 +238,16 @@ class AppInvalidRegTest
         );
     }
     
+    /**
+     * Method checkUserAlreadyRediteredValidation
+     *
+     * @return void
+     */
     protected function checkUserAlreadyRediteredValidation(): void
     {
-        $this->appTest->getLogger()->test('I am going to try to registrate an already exist user');
+        $this->appTest->getLogger()->test(
+            'I am going to try to registrate an already exist user'
+        );
 
         $contents = $this->appTest->getTester()->post(
             '?q=registry',
@@ -183,6 +258,9 @@ class AppInvalidRegTest
             ]
         );
         $this->appTest->getAppChecker()->checkRegistryPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Registration failed');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Registration failed'
+        );
     }
 }

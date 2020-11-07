@@ -1,22 +1,39 @@
-<?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+<?php declare(strict_types = 1);
+        
+/**
+ * PHP version 7.4
+ *
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 
 namespace GyMadarasz\Test;
 
 /**
- * Description of AppInvalidPwdResetTest
+ * AppInvalidPwdResetTest
  *
- * @author gyula
+ * @category  PHP
+ * @package   GyMadarasz\Test
+ * @author    Gyula Madarasz <gyula.madarasz@gmail.com>
+ * @copyright 2020 Gyula Madarasz
+ * @license   Copyright (c) all right reserved.
+ * @link      this
  */
 class AppInvalidPwdResetTest
 {
     protected AppTest $appTest;
     
+    /**
+     * Method testWith
+     *
+     * @param \GyMadarasz\Test\AppTest $appTest appTest
+     *
+     * @return void
+     */
     public function testWith(AppTest $appTest): void
     {
         $this->appTest = $appTest;

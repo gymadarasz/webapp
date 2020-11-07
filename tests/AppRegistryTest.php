@@ -27,6 +27,13 @@ class AppRegistryTest
 {
     protected AppTest $appTest;
     
+    /**
+     * Method testWith
+     *
+     * @param \GyMadarasz\Test\AppTest $appTest appTest
+     *
+     * @return void
+     */
     public function testWith(AppTest $appTest): void
     {
         $this->appTest = $appTest;
@@ -37,6 +44,11 @@ class AppRegistryTest
         $this->checkLoginLogoutWorks();
     }
     
+    /**
+     * Method checkIncorrectLogin
+     *
+     * @return void
+     */
     protected function checkIncorrectLogin(): void
     {
         $this->appTest->getLogger()->test('I am going to the Login page.');
@@ -58,9 +70,17 @@ class AppRegistryTest
             ]
         );
         $this->appTest->getAppChecker()->checkLoginPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Login failed');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Login failed'
+        );
     }
 
+    /**
+     * Method checkRegistryPageWorks
+     *
+     * @return void
+     */
     protected function checkRegistryPageWorks(): void
     {
         $this->appTest->getLogger()->test('I am going to Register page.');
@@ -90,9 +110,16 @@ class AppRegistryTest
         );
     }
     
+    /**
+     * Method checkActivationEmailResend
+     *
+     * @return void
+     */
     protected function checkActivationEmailResend(): void
     {
-        $this->appTest->getLogger()->test('I am going to check my activation email.');
+        $this->appTest->getLogger()->test(
+            'I am going to check my activation email.'
+        );
 
         $email = $this->appTest->checkMail('Activate your account');
         $token = $this->appTest->checkRegistrationEmail($email);
@@ -125,10 +152,15 @@ class AppRegistryTest
             ]
         );
         $this->appTest->getAppChecker()->checkLoginPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Login failed');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Login failed'
+        );
 
 
-        $this->appTest->getLogger()->test('I am going to check my activation email.');
+        $this->appTest->getLogger()->test(
+            'I am going to check my activation email.'
+        );
 
         $email = $this->appTest->checkMail('Activate your account');
         $token = $this->appTest->checkRegistrationEmail($email);
@@ -141,10 +173,14 @@ class AppRegistryTest
         );
 
         $contents = $this->appTest->getTester()->get(
-            $this->appTest->getConfig()->get('baseUrl') . '?q=activate&token=incorrect'
+            $this->appTest->getConfig()->get('baseUrl') .
+                '?q=activate&token=incorrect'
         );
         $this->appTest->getAppChecker()->checkErrorPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsError($contents, 'Activation token is incorrect.');
+        $this->appTest->getAppChecker()->checkPageContainsError(
+            $contents,
+            'Activation token is incorrect.'
+        );
 
 
         $this->appTest->getLogger()->test(
@@ -152,10 +188,14 @@ class AppRegistryTest
         );
 
         $contents = $this->appTest->getTester()->get(
-            $this->appTest->getConfig()->get('baseUrl') . '?q=activate&token=' . $token
+            $this->appTest->getConfig()->get('baseUrl') .
+                '?q=activate&token=' . $token
         );
         $this->appTest->getAppChecker()->checkLoginPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Your account is now activated.');
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
+            $contents,
+            'Your account is now activated.'
+        );
 
 
         $this->appTest->getLogger()->test(
@@ -165,13 +205,20 @@ class AppRegistryTest
             "SELECT active FROM user WHERE email = '" .
                 AppTest::USER_EMAIL . "' LIMIT 1;"
         );
-        $this->appTest->getTester()->getAssertor()->assertTrue(isset($results['active']));
+        $this->appTest->getTester()->getAssertor()->assertTrue(
+            isset($results['active'])
+        );
         $this->appTest->getTester()->getAssertor()->assertEquals(
             1,
             (int)((array)$results)['active']
         );
     }
     
+    /**
+     * Method checkLoginLogoutWorks
+     *
+     * @return void
+     */
     protected function checkLoginLogoutWorks(): void
     {
         $this->appTest->getLogger()->test(
@@ -184,7 +231,9 @@ class AppRegistryTest
         $this->appTest->getAppChecker()->checkMainPage($contents);
         
 
-        $this->appTest->getLogger()->test('I am going to the restricted Index page.');
+        $this->appTest->getLogger()->test(
+            'I am going to the restricted Index page.'
+        );
 
         $contents = $this->appTest->getTester()->get('');
         $this->appTest->getAppChecker()->checkMainPage($contents);
@@ -194,6 +243,9 @@ class AppRegistryTest
 
         $contents = $this->appTest->getTester()->get('?q=logout');
         $this->appTest->getAppChecker()->checkLoginPage($contents);
-        $this->appTest->getAppChecker()->checkPageContainsMessage($contents, 'Logout success');
+        $this->appTest->getAppChecker()->checkPageContainsMessage(
+            $contents,
+            'Logout success'
+        );
     }
 }
