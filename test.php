@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
+use GuzzleHttp\Client;
+use GyMadarasz\Test\AppTest;
+use GyMadarasz\Test\Assertor;
+use GyMadarasz\Test\Inspector;
+use GyMadarasz\Test\Tester;
+use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Invoker;
 use GyMadarasz\WebApp\Service\Logger;
-use GyMadarasz\WebApp\Service\Config;
-use GyMadarasz\WebApp\Service\Mysql;
-use GyMadarasz\Test\Test;
-use GyMadarasz\Test\Tester;
-use GyMadarasz\Test\AppTest;
-use GuzzleHttp\Client;
 
 include __DIR__ . '/vendor/autoload.php';
 
@@ -27,6 +27,8 @@ return (new Tester())->test(
     new Invoker(),
     $config = new Config(),
     $logger = new Logger($config),
+    new Assertor(),
+    new Inspector(),
     $client = new Client([
         'base_uri' => $config->get('baseUrl'), 
         'cookies' => true,

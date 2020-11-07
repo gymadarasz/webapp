@@ -250,8 +250,8 @@ class AppTest
             "SELECT active FROM user WHERE email = '" .
                 AppTest::USER_EMAIL . "' LIMIT 1;"
         );
-        $this->tester->assertTrue(isset($results['active']));
-        $this->tester->assertEquals(
+        $this->tester->getAssertor()->assertTrue(isset($results['active']));
+        $this->tester->getAssertor()->assertEquals(
             1,
             (int)((array)$results)['active']
         );
@@ -643,8 +643,8 @@ class AppTest
             'I am going to check that I can see the Error page properly.'
         );
 
-        $this->tester->assertContains('<h1>Error</h1>', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains('<h1>Error</h1>', $contents);
+        $this->tester->getAssertor()->assertContains(
             '<a href="' . $this->config->get('baseUrl') . '">Back</a>',
             $contents
         );
@@ -663,25 +663,28 @@ class AppTest
             'I am going to check that I can see the Login page properly.'
         );
 
-        $this->tester->assertContains('<h1>Login</h1>', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains('<h1>Login</h1>', $contents);
+        $this->tester->getAssertor()->assertContains(
             '<form method="POST" action="?q=">',
             $contents
         );
-        $this->tester->assertContains('<input type="email" name="email"', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
+            '<input type="email" name="email"',
+            $contents
+        );
+        $this->tester->getAssertor()->assertContains(
             '<input type="password" name="password"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<input type="submit" value="Login"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<a href="?q=registry">Registry</a>',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<a href="?q=pwdreset">Forgotten password</a>',
             $contents
         );
@@ -700,29 +703,32 @@ class AppTest
             'I am going to check that I can see the Registry page properly.'
         );
 
-        $this->tester->assertContains('<h1>Registry</h1>', $contents);
-        $this->tester->assertContains('<input type="email" name="email"', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains('<h1>Registry</h1>', $contents);
+        $this->tester->getAssertor()->assertContains(
+            '<input type="email" name="email"',
+            $contents
+        );
+        $this->tester->getAssertor()->assertContains(
             '<input type="email" name="email_retype"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<input type="password" name="password"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<input type="submit" value="Register"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<a href="?q=login">Login</a>',
             $contents
         );
-        $this->tester->assertNotContains(
+        $this->tester->getAssertor()->assertNotContains(
             '<a href="?q=registry">Registry</a>',
             $contents
         );
-        $this->tester->assertNotContains(
+        $this->tester->getAssertor()->assertNotContains(
             '<a href="?q=pwdreset">Forgotten password</a>',
             $contents
         );
@@ -741,9 +747,15 @@ class AppTest
             'I am going to check that I can see the Password Reset page properly.'
         );
 
-        $this->tester->assertContains('<h1>Password reset</h1>', $contents);
-        $this->tester->assertContains('<input type="email" name="email"', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
+            '<h1>Password reset</h1>',
+            $contents
+        );
+        $this->tester->getAssertor()->assertContains(
+            '<input type="email" name="email"',
+            $contents
+        );
+        $this->tester->getAssertor()->assertContains(
             '<input type="submit" value="Reset password"',
             $contents
         );
@@ -762,8 +774,11 @@ class AppTest
             'I am going to check that I can see the Main page properly.'
         );
 
-        $this->tester->assertContains('<h1>Main</h1>', $contents);
-        $this->tester->assertContains('<a href="?q=logout">Logout</a>', $contents);
+        $this->tester->getAssertor()->assertContains('<h1>Main</h1>', $contents);
+        $this->tester->getAssertor()->assertContains(
+            '<a href="?q=logout">Logout</a>',
+            $contents
+        );
     }
 
     /**
@@ -779,16 +794,19 @@ class AppTest
             'I am going to check that I can see the Change Password page properly.'
         );
 
-        $this->tester->assertContains('<h1>Change password</h1>', $contents);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
+            '<h1>Change password</h1>',
+            $contents
+        );
+        $this->tester->getAssertor()->assertContains(
             '<input type="password" name="password"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<input type="password" name="password_retype"',
             $contents
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<input type="submit" value="Change password"',
             $contents
         );
@@ -811,7 +829,7 @@ class AppTest
                 '" on the page.'
         );
 
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<div class="message">' . $message . '</div>',
             $contents
         );
@@ -832,7 +850,7 @@ class AppTest
                 '" on the page.'
         );
 
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<div class="message red">' . $error . '</div>',
             $contents
         );
@@ -853,12 +871,15 @@ class AppTest
         );
 
         $files = (array)glob($this->config->get('mailerSaveMailsPath') . '/*.*');
-        $this->tester->assertCount(1, $files);
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertCount(1, $files);
+        $this->tester->getAssertor()->assertContains(
             AppTest::USER_EMAIL,
             (string)($files[0] ?? '')
         );
-        $this->tester->assertContains($subject, (string)($files[0] ?? ''));
+        $this->tester->getAssertor()->assertContains(
+            $subject,
+            (string)($files[0] ?? '')
+        );
         return (string)($files[0] ?? '') ?
             (string)file_get_contents((string)($files[0] ?? '')) :
             '';
@@ -877,25 +898,25 @@ class AppTest
             'I am going to check that the Registration email is correct.'
         );
 
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             'Thank you for your registration,<br>',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             'please activate your account by click on the following link '
                 . 'or copy to your browser address line:<br>',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<a href="' . $this->config->get('baseUrl') . '?q=activate&token=',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '">' . $this->config->get('baseUrl') . '?q=activate&token=',
             $email
         );
         $token = explode('">', explode('&token=', $email)[1] ?? '')[0] ?? '';
-        $this->tester->assertLongerThan(40, $token);
+        $this->tester->getAssertor()->assertLongerThan(40, $token);
         return $token;
     }
 
@@ -912,24 +933,24 @@ class AppTest
             'I am going to check that the Password Reset email is correct.'
         );
 
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             'You asked to reset your password,<br>',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             'you can reset your password by click on the following link or copy to '.
                 'your browser address line:<br>',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '<a href="' . $this->config->get('baseUrl') . '?q=newpassword&token=',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             '">' . $this->config->get('baseUrl') . '?q=newpassword&token=',
             $email
         );
-        $this->tester->assertContains(
+        $this->tester->getAssertor()->assertContains(
             'If you did not asked to reset password please ignore this message.<br>',
             $email
         );
@@ -941,7 +962,7 @@ class AppTest
                 $email
             )[1]
         )[0];
-        $this->tester->assertLongerThan(40, $token);
+        $this->tester->getAssertor()->assertLongerThan(40, $token);
         return $token;
     }
 }
