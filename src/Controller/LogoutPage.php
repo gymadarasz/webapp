@@ -40,9 +40,9 @@ class LogoutPage
     {
         $globals->sessionDestroy();
         $output = $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'login.html.php',
+            'body' => 'login.html',
             ]
         );
         $output->set('message', 'Logout success');

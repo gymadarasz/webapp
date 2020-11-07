@@ -39,9 +39,9 @@ class LoginPage
     public function viewLogin(Template $template): Template
     {
         return $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'login.html.php',
+            'body' => 'login.html',
             ]
         );
     }
@@ -66,17 +66,17 @@ class LoginPage
         )
         ) {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'main.html.php',
+                'body' => 'main.html',
                 ]
             );
             $output->set('message', 'Login success');
         } else {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'login.html.php',
+                'body' => 'login.html',
                 ]
             );
             $output->set('error', 'Login failed');

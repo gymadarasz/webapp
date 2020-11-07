@@ -74,9 +74,9 @@ class PasswordResetPagePost
     public function doPasswordReset(): Template
     {
         $output = $this->template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'login.html.php',
+            'body' => 'login.html',
             ]
         );
         if ($this->resetPassword($this->globals->getPost('email', ''))) {
@@ -124,7 +124,7 @@ class PasswordResetPagePost
      */
     protected function sendPasswordResetEmail(string $email, string $token): bool
     {
-        $message = $this->template->create('emails/pwd-reset.html.php');
+        $message = $this->template->create('emails/pwd-reset.html');
         $message->setAsItIs(
             'link',
             $this->config->get('baseUrl') . "?q=newpassword&token=$token"

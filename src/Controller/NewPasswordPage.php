@@ -48,18 +48,18 @@ class NewPasswordPage
         $token = $globals->getGet('token');
         if (!$user->doAuthByToken($token)) {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'pwdchange.html.php',
+                'body' => 'pwdchange.html',
                 ]
             );
             $output->set('error', 'Invalid token');
             return $output;
         }
         return $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'pwdchange.html.php',
+            'body' => 'pwdchange.html',
             ]
         );
     }
@@ -98,17 +98,17 @@ class NewPasswordPage
         }
         if (!$error && $user->changePassword($password)) {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'login.html.php',
+                'body' => 'login.html',
                 ]
             );
             $output->set('message', 'Your password changed, please log in');
         } else {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'pwdchange.html.php',
+                'body' => 'pwdchange.html',
                 ]
             );
             $output->set('error', $error);

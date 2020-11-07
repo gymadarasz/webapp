@@ -37,9 +37,9 @@ class PasswordResetPage
     public function viewPasswordReset(Template $template): Template
     {
         return $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'pwdreset.html.php',
+            'body' => 'pwdreset.html',
             ]
         );
     }

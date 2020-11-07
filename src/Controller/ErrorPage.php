@@ -39,9 +39,9 @@ class ErrorPage
     public function viewError(Config $config, Template $template): Template
     {
         $output = $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'error-page.html.php',
+            'body' => 'error-page.html',
             ]
         );
         $output->set('error', 'Request is not supported.');

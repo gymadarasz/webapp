@@ -48,17 +48,17 @@ class ActivatePage
     ): Template {
         if ($user->doActivate($globals->getGet('token'))) {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'login.html.php',
+                'body' => 'login.html',
                 ]
             );
             $output->set('message', 'Your account is now activated.');
         } else {
             $output = $template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'error-page.html.php',
+                'body' => 'error-page.html',
                 ]
             );
             $output->set('error', 'Activation token is incorrect.');

@@ -1,5 +1,5 @@
 <h1>Registry</h1>
-{{ isset($this) ? $this->create('messages.html.php', $this->data) : ''; }}
+{{ isset($this) ? $this->create('messages.html', $this->data) : ''; }}
 <form method="POST">
     <input type="email" name="email" placeholder="Email" value="{{ $email ?? ''; }}">
     <input type="email" name="email_retype" placeholder="Retype email" value="{{ $emailRetype ?? ''; }}">

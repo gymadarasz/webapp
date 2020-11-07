@@ -92,9 +92,9 @@ class RegistryPagePost
                 $this->globals->getPost('password', '')
             );
             $output = $this->template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'login.html.php',
+                'body' => 'login.html',
                 ]
             );
             $output->setAsItIs(
@@ -105,9 +105,9 @@ class RegistryPagePost
             );
         } catch (UserErrorException $e) {
             $output = $this->template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'registry.html.php',
+                'body' => 'registry.html',
                 ]
             );
             $output->set('error', $e->getMessage());
@@ -116,9 +116,9 @@ class RegistryPagePost
         } catch (Exception $e) {
             $this->logger->doLogException($e);
             $output = $this->template->create(
-                'index.html.php',
+                'index.html',
                 [
-                'body' => 'registry.html.php',
+                'body' => 'registry.html',
                 ]
             );
             $output->set('error', 'Registration failed');
@@ -180,7 +180,7 @@ class RegistryPagePost
      */
     protected function sendActivationEmail(string $email, string $token): bool
     {
-        $message = $this->template->create('emails/activation.html.php');
+        $message = $this->template->create('emails/activation.html');
         $message->setAsItIs(
             'link',
             $this->config->get('baseUrl') . "?q=activate&token=$token"

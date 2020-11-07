@@ -120,9 +120,10 @@ class Template
     protected function getCacheFile(string $filename): string
     {
         $fullFilename = $this->getFullname($filename);
-        $cacheFile = $this->config->get('templatesCachePath') . '/' . $filename;
+        $cacheFile = $this->config->get('templatesCachePath') .
+        '/' . $filename . '.php';
         $cacheFileExists = file_exists($cacheFile);
-        $cacheTime = filemtime($cacheFile);
+        $cacheTime = $cacheFileExists ? filemtime($cacheFile) : false;
         
         if ($cacheFileExists && false === $cacheTime) {
             throw new RuntimeException(

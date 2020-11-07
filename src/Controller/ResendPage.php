@@ -65,9 +65,9 @@ class ResendPage
     public function viewResend(): Template
     {
         $output = $this->template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'login.html.php',
+            'body' => 'login.html',
             ]
         );
         $output->setAsItIs(
@@ -97,7 +97,7 @@ class ResendPage
      */
     protected function sendActivationEmail(string $email, string $token): bool
     {
-        $message = $this->template->create('emails/activation.html.php');
+        $message = $this->template->create('emails/activation.html');
         $message->setAsItIs(
             'link',
             $this->config->get('baseUrl') . "?q=activate&token=$token"

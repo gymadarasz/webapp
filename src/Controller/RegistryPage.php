@@ -37,9 +37,9 @@ class RegistryPage
     public function viewRegistry(Template $template): Template
     {
         return $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'registry.html.php',
+            'body' => 'registry.html',
             ]
         );
     }

@@ -37,9 +37,9 @@ class MainPage
     public function viewIndex(Template $template): Template
     {
         return $template->create(
-            'index.html.php',
+            'index.html',
             [
-            'body' => 'main.html.php',
+            'body' => 'main.html',
             ]
         );
     }
