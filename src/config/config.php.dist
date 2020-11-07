@@ -6,7 +6,7 @@ $authSleep = 3;
 $templatesPath = __DIR__ . '/../templates';
 $templatesPathExt = __DIR__ . '/../../../webapp/src/templates';
 $templatesCachePath = __DIR__ . '/../templates/cache';
-$templatesCacheMode = 755;
+$templatesCacheMode = 0777;
 
 $mysqlHost = 'localhost';
 $mysqlUser = 'user';
@@ -26,5 +26,6 @@ $mailerNoreplyName = 'Do Not Reply';
 $mailerSendMails = true;
 $mailerSaveMails = true;
 $mailerSaveMailsPath = __DIR__ . '/../../mails';
+$mailerSaveMailsMode = 0777;
     
 $logFile = __DIR__ . '/../../logs/app.log';

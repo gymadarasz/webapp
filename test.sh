@@ -1,4 +1,5 @@
 rm -rf src/templates/cache/
+rm -rf mails/
 
 echo "------------- php-cs-fixer -------------"
 vendor/bin/php-cs-fixer fix src

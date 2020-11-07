@@ -141,7 +141,11 @@ class Mailer
             if ($this->config->get('mailerSaveMails')) {
                 if ((!file_exists($this->config->get('mailerSaveMailsPath'))
                     || !is_dir($this->config->get('mailerSaveMailsPath')))
-                    && !mkdir($this->config->get('mailerSaveMailsPath'), 777)
+                    && !mkdir(
+                        $this->config->get('mailerSaveMailsPath'),
+                        $this->config->get('mailerSaveMailsMode'),
+                        true
+                    )
                 ) {
                     throw new RuntimeException(
                         "Folder creation error: " .
