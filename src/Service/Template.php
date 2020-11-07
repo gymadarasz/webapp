@@ -131,7 +131,8 @@ class Template
                     $cacheFile
             );
         }
-        if (false === ($tplTime = filemtime($fullFilename))) {
+        $tplTime = filemtime($fullFilename);
+        if (false === $tplTime) {
             throw new RuntimeException(
                 'Can not retrieve file modify time for template file: ' .
                     $fullFilename
@@ -162,30 +163,30 @@ class Template
                 'Error reading template file: ' . $fullFilename
             );
         }
-        $tplContentsReplacedPhpTagLong = str_replace(
+        $tplTagLong = str_replace(
             '{{?php',
             '<?php ',
             $tplContents
         );
-        $tplContentsReplacedPhpTagShort = str_replace(
+        $tplTagShort = str_replace(
             '{{?',
             '<?php ',
-            $tplContentsReplacedPhpTagLong
+            $tplTagLong
         );
-        $tplContentsReplacedPhpEcho = str_replace(
+        $tplEcho = str_replace(
             '{{',
             '<?php echo ',
-            $tplContentsReplacedPhpTagShort
+            $tplTagShort
         );
-        $tplContentsReplacedPhpClosure = str_replace(
+        $tplClosure = str_replace(
             '}}',
             '?>',
-            $tplContentsReplacedPhpEcho
+            $tplEcho
         );
-        $tplContentsReplaced = '<?php if (!isset($this) || !($this instanceof ' .
+        $tplCntsRplcd = '<?php if (!isset($this) || !($this instanceof ' .
                 self::class .
                 ')) throw new \\RuntimeException("Invalid entry"); ?>' .
-                $tplContentsReplacedPhpClosure;
+                $tplClosure;
         
         $dirname = dirname($cacheFile);
         if (!is_dir($dirname)
@@ -195,7 +196,7 @@ class Template
                 'Template folder is not created for template file: ' . $cacheFile
             );
         }
-        if (false === file_put_contents($cacheFile, $tplContentsReplaced)) {
+        if (false === file_put_contents($cacheFile, $tplCntsRplcd)) {
             throw new RuntimeException(
                 'Tempplate file is not created: ' . $cacheFile
             );
@@ -223,8 +224,8 @@ class Template
     public function __toString(): string
     {
         ob_start();
-        foreach ($this->data as $_key => $_value) {
-            $$_key = $_value;
+        foreach ($this->data as $key => $value) {
+            $$key = $value;
         }
         include $this->filename;
         $contents = (string)ob_get_contents();
@@ -256,18 +257,17 @@ class Template
      */
     protected function encode($value)
     {
+        $ret = htmlentities($value);
         if (is_array($value)) {
             $ret = [];
-            foreach ($value as $_key => $_value) {
-                $ret[$_key] = $this->encode($_value);
+            foreach ($value as $key => $value) {
+                $ret[$key] = $this->encode($value);
             }
         } elseif (is_object($value)) {
             $ret = new stdClass();
-            foreach ((array)$value as $_key => $_value) {
-                $ret->$_key = $this->encode($_value);
+            foreach ((array)$value as $key => $value) {
+                $ret->$key = $this->encode($value);
             }
-        } else {
-            $ret = htmlentities($value);
         }
 
         return $ret;

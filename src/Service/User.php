@@ -39,7 +39,7 @@ use GyMadarasz\WebApp\Service\Mysql;
  */
 class User
 {
-    protected int $id;
+    protected int $uid;
 
     protected string $email;
 
@@ -73,14 +73,14 @@ class User
     public function doAuth(string $email, string $password): bool
     {
         sleep($this->config->get('authSleep'));
-        $_email = $this->mysql->escape($email);
+        $emailEscaped = $this->mysql->escape($email);
         $query = "SELECT id, email, password FROM user "
-                . "WHERE email = '$_email' AND active = 1 LIMIT 1;";
+                . "WHERE email = '$emailEscaped' AND active = 1 LIMIT 1;";
         $user = $this->mysql->selectOne($query);
         if (!$user || !password_verify($password, $user['password'])) {
             return false;
         }
-        $this->id = (int)$user['id'];
+        $this->uid = (int)$user['id'];
         $this->email = $user['email'];
         $this->globals->setSession('user', $this);
         return true;
@@ -96,14 +96,14 @@ class User
     public function doAuthByToken(string $token): bool
     {
         sleep($this->config->get('authSleep'));
-        $_token = $this->mysql->escape($token);
+        $tokenEscaped = $this->mysql->escape($token);
         $query = "SELECT id, email, password FROM user "
-                . "WHERE token = '$_token' AND active = 1 LIMIT 1;";
+                . "WHERE token = '$tokenEscaped' AND active = 1 LIMIT 1;";
         $user = $this->mysql->selectOne($query);
         if (!$user) {
             return false;
         }
-        $this->id = (int)$user['id'];
+        $this->uid = (int)$user['id'];
         $this->email = $user['email'];
         return true;
     }
@@ -117,10 +117,10 @@ class User
      */
     public function doActivate(string $token): int
     {
-        $_token = $this->mysql->escape($token);
+        $tokenEscaped = $this->mysql->escape($token);
         return $this->mysql->update(
             "UPDATE user SET active = 1, token = '' "
-                . "WHERE token = '$_token' LIMIT 1;"
+                . "WHERE token = '$tokenEscaped' LIMIT 1;"
         );
     }
 
@@ -134,13 +134,13 @@ class User
      */
     public function createUser(string $email, string $password): ?string
     {
-        $_email = $this->mysql->escape($email);
-        $_password = $this->encrypt($password);
-        $_token = $this->mysql->escape($this->generateToken());
+        $emailEscaped = $this->mysql->escape($email);
+        $passwordEscaped = $this->encrypt($password);
+        $tokenEscaped = $this->mysql->escape($this->generateToken());
         $query = "INSERT INTO user (email, password, token, active) "
-                . "VALUES ('$_email', '$_password', '$_token', 0)";
+                . "VALUES ('$emailEscaped', '$passwordEscaped', '$tokenEscaped', 0)";
         if ($this->mysql->query($query)) {
-            return $_token;
+            return $tokenEscaped;
         }
         return null;
     }
@@ -154,12 +154,12 @@ class User
      */
     public function createToken(string $email): ?string
     {
-        $_email = $this->mysql->escape($email);
-        $_token = $this->mysql->escape($this->generateToken());
-        $query = "UPDATE user SET token = '$_token' "
-                . "WHERE email = '$_email' LIMIT 1;";
+        $emailEscaped = $this->mysql->escape($email);
+        $tokenEscaped = $this->mysql->escape($this->generateToken());
+        $query = "UPDATE user SET token = '$tokenEscaped' "
+                . "WHERE email = '$emailEscaped' LIMIT 1;";
         if ($this->mysql->query($query)) {
-            return $_token;
+            return $tokenEscaped;
         }
         return null;
     }
@@ -173,10 +173,10 @@ class User
      */
     public function changePassword(string $password): bool
     {
-        $_id = (int)$this->id;
-        $_password = $this->encrypt($password);
-        $query = "UPDATE user SET password = '$_password', token = '' "
-                . "WHERE id = $_id LIMIT 1;";
+        $idEscaped = (int)$this->uid;
+        $passwordEscaped = $this->encrypt($password);
+        $query = "UPDATE user SET password = '$passwordEscaped', token = '' "
+                . "WHERE id = $idEscaped LIMIT 1;";
         return $this->mysql->query($query);
     }
 
