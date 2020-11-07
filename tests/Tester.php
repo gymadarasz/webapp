@@ -111,7 +111,8 @@ class Tester
             $this->logger->info(
                 "Environment is '" . $this->config->getEnv() . "' now."
             );
-        } else {
+        }
+        if ($env === 'test') {
             $this->logger->info(
                 "Environment is '" . $this->config->getEnv() .
                     "' don't forget to revert it back in your " . Config::ENV_FILE
@@ -165,12 +166,12 @@ class Tester
         string $results,
         string $message = 'Results should contains the expected string.'
     ): void {
-        $ok = strpos($results, $expected) !== false;
-        if (!$ok) {
+        $oke = strpos($results, $expected) !== false;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -187,12 +188,12 @@ class Tester
         string $results,
         string $message = 'Results should not contains the expected string.'
     ): void {
-        $ok = strpos($results, $expected) === false;
-        if (!$ok) {
+        $oke = strpos($results, $expected) === false;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -209,12 +210,12 @@ class Tester
         array $results,
         string $message = 'Results array should has expected count.'
     ): void {
-        $ok = count($results) === $expected;
-        if (!$ok) {
+        $oke = count($results) === $expected;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -231,12 +232,12 @@ class Tester
         string $results,
         string $message = 'Results string should not long enough as expected.'
     ): void {
-        $ok = strlen($results) > $expected;
-        if (!$ok) {
+        $oke = strlen($results) > $expected;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -253,18 +254,18 @@ class Tester
         $results,
         string $message = 'Results should equals to expected (type strict).'
     ): void {
-        $ok = $results === $expected;
-        if (!$ok) {
+        $oke = $results === $expected;
+        if (!$oke) {
             if (is_string($expected)) {
-                $a1 = explode(' ', $expected);
-                $a2 = explode(' ', $results);
+                $arr1 = explode(' ', $expected);
+                $arr2 = explode(' ', $results);
                 $message .= "\nDifferents between given values are:\n" .
-                        join(' ', array_diff($a1, $a2)) . "\n";
+                        join(' ', array_diff($arr1, $arr2)) . "\n";
             }
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -281,12 +282,12 @@ class Tester
         $results,
         string $message = 'Results should equals to expected (type strict).'
     ): void {
-        $ok = $results !== $expected;
-        if (!$ok) {
+        $oke = $results !== $expected;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -301,12 +302,12 @@ class Tester
         bool $results,
         string $message = 'Results should be true.'
     ): void {
-        $ok = $results === true;
-        if (!$ok) {
+        $oke = $results === true;
+        if (!$oke) {
             $this->fail($message);
-        } else {
-            $this->ok();
+            return;
         }
+        $this->oke();
     }
 
     /**
@@ -317,13 +318,12 @@ class Tester
     public function stat(): int
     {
         echo "\nSuccess: " . $this->passes;
+        $output = "\nAll tests are passed.";
         if ($this->errors) {
-            echo "\nFailure: " . count($this->errors);
-            echo implode("\n", $this->errors);
-        } else {
-            echo "\nAll tests are passed.";
+            $output = "\nFailure: " . count($this->errors) .
+                implode("\n", $this->errors);
         }
-        echo "\n";
+        echo "$output\n";
         return count($this->errors);
     }
 
@@ -341,18 +341,18 @@ class Tester
         try {
             throw new Exception();
         } catch (Exception $e) {
-        }
-        $this->errors[] = "\nTest failed: " . $message .
+            $this->errors[] = "\nTest failed: " . $message .
             "\nTrace:\n" . $e->getTraceAsString();
-        echo 'X';
+            echo 'X';
+        }
     }
 
     /**
-     * Method ok
+     * Method oke
      *
      * @return void
      */
-    protected function ok(): void
+    protected function oke(): void
     {
         $this->passes++;
         echo ".";
@@ -374,6 +374,7 @@ class Tester
         string $name,
         string $contents
     ): array {
+        $matches = [];
         if (!preg_match_all(
             '/<input\s+type\s*=\s*"' . $type .
                 '"\s*name\s*=\s*"' . preg_quote($name) .
@@ -393,7 +394,7 @@ class Tester
                     $type . '" name="' . $name . '" value=...>'
             );
         }
-        return $matches[1];
+        return $matches[1] ?: [];
     }
     
     /**
@@ -406,6 +407,7 @@ class Tester
      */
     public function getLinks(string $hrefStarts, string $contents): array
     {
+        $matches = [];
         if (!preg_match_all(
             '/<a href="(' . preg_quote($hrefStarts) . '[^"]*)"/',
             $contents,
@@ -414,7 +416,7 @@ class Tester
         ) {
             return [];
         }
-        return $matches[1];
+        return $matches[1] ?: [];
     }
 
     /**
@@ -450,12 +452,13 @@ class Tester
      */
     public function getOptionValue(string $option): string
     {
+        $matches = [];
         if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)
         ) {
             // TODO check inner text??
             throw new RuntimeException('Unrecognised value in option: ' . $option);
         }
-        return $matches[1];
+        return $matches[1] ?: [];
     }
 
     /**
@@ -467,10 +470,11 @@ class Tester
      */
     public function getSelectOptions(string $select): array
     {
+        $matches = [];
         if (!preg_match_all('/<option(.+?)<\/option>/s', $select, $matches)) {
             return [];
         }
-        return $matches[0];
+        return $matches[0] ?: [];
     }
 
 
@@ -480,7 +484,7 @@ class Tester
      * @param string $name     Name
      * @param string $contents Contents
      *
-     * @return string[]
+     * @return array<int, string[]|string|null>
      * @throws RuntimeException
      */
     public function getSelectFieldValue(string $name, string $contents): array
@@ -490,30 +494,64 @@ class Tester
         foreach ($selects as $select) {
             $multiple = $this->isMultiSelectField($select);
             unset($value);
-            if ($options = $this->getOptionFieldContents($select)) {
-                if ($multiple) {
-                    $value = [];
-                    foreach ($options as $option) {
-                        if ($this->isOptionSelected($option)) {
-                            $value[] = $this->getOptionFieldValue($option);
-                        }
-                    }
-                } else {
-                    foreach ($options as $option) {
-                        if ($this->isOptionSelected($option) || !isset($value)) {
-                            $value = $this->getOptionFieldValue($option);
-                        }
-                    }
-                    $values[] = $value;
-                }
-            } else {
+            $options = $this->getOptionFieldContents($select);
+            if (!$options) {
                 throw new RuntimeException(
                     'A select element has not any option: ' .
                     explode('\n', $select)[0] . '...'
                 );
             }
+            
+            if ($multiple) {
+                $value = $this->getSelectedOptionValueMultiple($options);
+            }
+            if (!$multiple) {
+                $value = $this->getSelectedOptionValueSimple(
+                    $options,
+                    isset($value) ? $value : null
+                );
+                $values[] = $value;
+            }
         }
         return $values;
+    }
+    
+    /**
+     * Method getSelectedOptionValueSimple
+     *
+     * @param string[] $options options
+     * @param string[] $value   value
+     *
+     * @return string[]|string|null
+     */
+    protected function getSelectedOptionValueSimple(
+        array $options,
+        array $value = null
+    ) {
+        foreach ($options as $option) {
+            if ($this->isOptionSelected($option) || null === $value) {
+                $value = $this->getOptionFieldValue($option);
+            }
+        }
+        return $value;
+    }
+    
+    /**
+     * Method getSelectedOptionValueMultiple
+     *
+     * @param string[] $options options
+     *
+     * @return string[]
+     */
+    protected function getSelectedOptionValueMultiple(array $options): array
+    {
+        $value = [];
+        foreach ($options as $option) {
+            if ($this->isOptionSelected($option)) {
+                $value[] = $this->getOptionFieldValue($option);
+            }
+        }
+        return $value;
     }
 
     /**
@@ -526,11 +564,12 @@ class Tester
      */
     public function getOptionFieldValue(string $option): string
     {
+        $matches = [];
         if (!preg_match('/<option\b.+?\bvalue\b\s*=\s*"(.+?)"/', $option, $matches)
         ) {
             throw new RuntimeException('Unrecognised value in option: ' . $option);
         }
-        return $matches[1];
+        return $matches[1] ?: [];
     }
 
     /**
@@ -542,7 +581,7 @@ class Tester
      */
     public function isOptionSelected(string $option): bool
     {
-        return (bool)preg_match('/<option\s[^>]*\bselected\b/', $option, $matches);
+        return (bool)preg_match('/<option\s[^>]*\bselected\b/', $option);
     }
 
     /**
@@ -554,7 +593,7 @@ class Tester
      */
     public function isMultiSelectField(string $select): bool
     {
-        return (bool)preg_match('/<select\s[^>]*\bmultiple\b/', $select, $matches);
+        return (bool)preg_match('/<select\s[^>]*\bmultiple\b/', $select);
     }
 
     /**
@@ -567,10 +606,11 @@ class Tester
      */
     public function getOptionFieldContents(string $select): array
     {
+        $matches = [];
         if (!preg_match_all('/<option(.+?)<\/option>/s', $select, $matches)) {
             throw new RuntimeException('Unrecognised options');
         }
-        return $matches[0];
+        return $matches[0] ?: [];
     }
     
     /**
@@ -584,6 +624,7 @@ class Tester
      */
     public function getSelectFieldContents(string $name, string $contents): array
     {
+        $matches = [];
         if (!preg_match_all(
             '/<select\s+name\s*=\s*"' . preg_quote($name) .
                         '"(.+?)<\/select>/s',
@@ -601,6 +642,6 @@ class Tester
                     $name . '"...</select>'
             );
         }
-        return $matches[0];
+        return $matches[0] ?: [];
     }
 }
