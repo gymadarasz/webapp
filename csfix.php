@@ -13,7 +13,7 @@ function fixit(string $phpfile): string {
         '/([\w\d_])\n     \* @return/' => '$1\n     *\n     * @return',
         '/\bprivate\b/' => 'protected',
         '/<\?php declare\(strict_types = 1\);\s*namespace ([\w\d_\\\\]+);/' => '<?php declare(strict_types = 1);\n\n/**\n *\n *\n * PHP version 7.4\n *\n * @category  PHP\n * @package   $1\n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) all right reserved.\n * @link      this\n */\n\nnamespace $1;',
-        '/;\s*class\s+([\w\d_]+)\s*\{/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) all right reserved.\n * @link      this\n */\nclass $1{',
+        '/;\s*class\s+([\w\d_]+)\b/' => ';\n\n/**\n * $1\n *\n * @category  PHP\n * @package   \n * @author    Gyula Madarasz <gyula.madarasz@gmail.com>\n * @copyright 2020 Gyula Madarasz\n * @license   Copyright (c) all right reserved.\n * @link      this\n */\nclass $1 ',
     ];
 
     foreach ($replaces as &$replace) {
