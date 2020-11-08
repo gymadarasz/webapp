@@ -8,11 +8,11 @@
         }
     },
     "require": {
-        "phpmailer/phpmailer": "^6.1",
-        "squizlabs/php_codesniffer": "*"
+        "phpmailer/phpmailer": "^6.1"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.2",
+        "squizlabs/php_codesniffer": "*",
         "phpstan/phpstan": "^0.12.52",
         "friendsofphp/php-cs-fixer": "^2.16",
         "phpmd/phpmd" : "@stable"

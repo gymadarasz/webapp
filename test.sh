@@ -15,8 +15,8 @@ echo "****************************** php-cs-fixer ******************************
 echo "**************************************************************************"
 echo ""
 
-vendor/bin/php-cs-fixer fix src
-vendor/bin/php-cs-fixer fix tests
+../webapp/vendor/bin/php-cs-fixer fix src
+../webapp/vendor/bin/php-cs-fixer fix tests
 
 echo ""
 echo "**************************************************************************"
@@ -24,8 +24,8 @@ echo "******************************** csfix.php *******************************
 echo "**************************************************************************"
 echo ""
 
-php ./csfix.php src
-php ./csfix.php tests
+php ../webapp/csfix.php src
+php ../webapp/csfix.php tests
 
 echo ""
 echo "**************************************************************************"
@@ -33,8 +33,8 @@ echo "********************************** phpcs *********************************
 echo "**************************************************************************"
 echo ""
 
-vendor/bin/phpcs src --ignore=*/config/*
-vendor/bin/phpcs tests
+../webapp/vendor/bin/phpcs src --ignore=*/config/*
+../webapp/vendor/bin/phpcs tests
 
 echo ""
 echo "**************************************************************************"
@@ -42,8 +42,8 @@ echo "********************************* phpcbf *********************************
 echo "**************************************************************************"
 echo ""
 
-vendor/bin/phpcbf src
-vendor/bin/phpcbf tests
+../webapp/vendor/bin/phpcbf src
+../webapp/vendor/bin/phpcbf tests
 
 echo ""
 echo "**************************************************************************"
@@ -51,8 +51,8 @@ echo "********************************* phpstan ********************************
 echo "**************************************************************************"
 echo ""
 
-vendor/bin/phpstan analyse --level 8 src
-vendor/bin/phpstan analyse --level 8 tests
+../webapp/vendor/bin/phpstan analyse --level 8 src
+../webapp/vendor/bin/phpstan analyse --level 8 tests
 
 echo ""
 echo "**************************************************************************"
@@ -60,8 +60,8 @@ echo "********************************** phpmd *********************************
 echo "**************************************************************************"
 echo ""
 
-vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
-vendor/bin/phpmd tests text cleancode,codesize,controversial,design,naming,unusedcode
+../webapp/vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
+../webapp/vendor/bin/phpmd tests text cleancode,codesize,controversial,design,naming,unusedcode
 
 echo ""
 echo "**************************************************************************"

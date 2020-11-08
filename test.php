@@ -26,10 +26,10 @@ error_reporting(E_ALL | E_STRICT);
 $errors = (new Tester())->test(
     new Invoker(),
     $config = new Config(),
-    $logger = new Logger($config),
+    new Logger($config),
     new Assertor(),
     new Inspector(),
-    $client = new Client([
+    new Client([
         'base_uri' => $config->get('baseUrl'), 
         'cookies' => true,
     ]), [
