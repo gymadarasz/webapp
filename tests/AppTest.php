@@ -38,7 +38,7 @@ class AppTest
     protected Logger $logger;
     protected Mysql $mysql;
     protected AppChecker $appChecker;
-    
+
     /**
      * Method __construct
      *
@@ -325,5 +325,29 @@ class AppTest
     public function getAppChecker(): AppChecker
     {
         return $this->appChecker;
+    }
+
+    /**
+     * Method setTester
+     *
+     * @param Tester $tester tester
+     *
+     * @return void
+     */
+    public function setTester(Tester $tester): void
+    {
+        $this->tester = $tester;
+    }
+
+    /**
+     * Method setAppCheckker
+     *
+     * @param \GyMadarasz\Test\AppChecker $appChecker appChecker
+     *
+     * @return void
+     */
+    public function setAppCheckker(AppChecker $appChecker): void
+    {
+        $this->appChecker = $appChecker;
     }
 }

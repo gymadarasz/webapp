@@ -61,7 +61,7 @@ class Invoker
             $method,
             $methodArgs,
             'Method ' . $route[0] . '::' . $route[1] .
-                ' has an or more non-class typed parameters.'
+                ' has one or more non-class typed parameters.'
         );
         return $ctrlr[0]->{$route[1]}(...$args);
     }

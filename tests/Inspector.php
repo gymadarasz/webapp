@@ -152,7 +152,7 @@ class Inspector extends Helper
      * @param string $name     Name
      * @param string $contents Contents
      *
-     * @return array<int, string[]|string|null>
+     * @return mixed[]
      * @throws RuntimeException
      */
     public function getSelectFieldValue(string $name, string $contents): array
@@ -176,10 +176,10 @@ class Inspector extends Helper
             if (!$multiple) {
                 $value = $this->getSelectedOptionValueSimple(
                     $options,
-                    isset($value) ? $value : null
+                    $value ?? null
                 );
-                $values[] = $value;
             }
+            $values[] = $value ?? null;
         }
         return $values;
     }

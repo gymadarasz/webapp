@@ -218,4 +218,16 @@ class Tester
     {
         return $this->passes++;
     }
+
+    /**
+     * Method setAssertor
+     *
+     * @param \GyMadarasz\Test\Assertor $assertor assertor
+     *
+     * @return void
+     */
+    public function setAssertor(Assertor $assertor): void
+    {
+        $this->assertor = $assertor;
+    }
 }

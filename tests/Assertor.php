@@ -132,12 +132,10 @@ class Assertor extends Helper
     ): void {
         $oke = $results === $expected;
         if (!$oke) {
-            if (is_string($expected)) {
-                $arr1 = explode(' ', $expected);
-                $arr2 = explode(' ', $results);
-                $message .= "\nDifferents between given values are:\n" .
+            $arr1 = explode(' ', (string)$expected);
+            $arr2 = explode(' ', (string)$results);
+            $message .= "\nDifferents between given values are:\n" .
                         join(' ', array_diff($arr1, $arr2)) . "\n";
-            }
             $this->fail($message);
             return;
         }
