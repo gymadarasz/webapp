@@ -15,17 +15,16 @@
 
 namespace GyMadarasz\WebApp\Service;
 
-use function sleep;
-use function password_verify;
-use function password_hash;
-use function urlencode;
-use function base64_encode;
-use function md5;
-use function rand;
-use RuntimeException;
 use GyMadarasz\WebApp\Service\Config;
 use GyMadarasz\WebApp\Service\Globals;
 use GyMadarasz\WebApp\Service\Mysql;
+use function base64_encode;
+use function md5;
+use function password_hash;
+use function password_verify;
+use function rand;
+use function sleep;
+use function urlencode;
 
 /**
  * User
@@ -56,11 +55,40 @@ class User
      */
     public function __construct(Config $config, Globals $globals, Mysql $mysql)
     {
+        $this->retrieve($globals);
+        
         $this->config = $config;
         $this->globals = $globals;
         $this->mysql = $mysql;
     }
-
+    
+    /**
+     * Method retrieve
+     *
+     * @param Globals $globals globals
+     *
+     * @return void
+     */
+    protected function retrieve(Globals $globals): void
+    {
+        $user = $globals->getSession('user');
+        if ($user) {
+            $vars = get_object_vars($user);
+            foreach ($vars as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+    }
+    
+    /**
+     * Method getUid
+     *
+     * @return int
+     */
+    public function getUid(): int
+    {
+        return $this->uid;
+    }
     
     /**
      * Method doAuth
